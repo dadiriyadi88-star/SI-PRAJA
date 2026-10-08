@@ -1,0 +1,3063 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPERBEL MIAS - Ma'had Imam Syafi'i</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- UI & Frameworks -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#ecfdf5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  
+  <!-- Library Unduh JPG & PDF Client-Side -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    [v-cloak] { display: none; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .card-3d {
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dark .card-3d {
+      background: #1e293b;
+      border-color: rgba(51, 65, 85, 0.7);
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.35);
+    }
+    .card-3d:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.07);
+    }
+    .dark .card-3d:hover {
+      box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.45);
+    }
+    .btn-3d-primary {
+      background: linear-gradient(180deg, #059669 0%, #047857 100%);
+      box-shadow: 0 2px 0 #065f46, 0 4px 8px rgba(5, 150, 105, 0.2);
+      transition: all 0.15s ease;
+    }
+    .btn-3d-primary:hover {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 0 #065f46, 0 6px 12px rgba(5, 150, 105, 0.25);
+    }
+    .btn-3d-primary:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #065f46;
+    }
+    .btn-3d-dark {
+      background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+      box-shadow: 0 2px 0 #0f172a, 0 4px 8px rgba(30, 41, 59, 0.2);
+      transition: all 0.15s ease;
+    }
+    .btn-3d-dark:hover {
+      background: linear-gradient(180deg, #475569 0%, #334155 100%);
+      transform: translateY(-1px);
+    }
+    .btn-3d-dark:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #0f172a;
+    }
+    .sig-canvas {
+      touch-action: none;
+      background: #ffffff;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 0.75rem;
+      cursor: crosshair;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100/70 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-emerald-500 selection:text-white min-h-screen overflow-x-hidden transition-colors duration-200">
+
+<div id="app" v-cloak class="min-h-screen flex flex-col">
+
+  <!-- ================= NOTIFIKASI TOAST SUARA SAMBUTAN ISLAMI ================= -->
+  <transition enter-active-class="transform ease-out duration-300 transition" enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-200" leave-from-class="opacity-100" leave-to-class="opacity-0">
+    <div v-if="showWelcomeToast" class="fixed top-5 right-5 z-50 max-w-sm w-full bg-gradient-to-br from-slate-900 to-emerald-950 text-white p-4 rounded-2xl shadow-2xl border border-emerald-500/50 flex items-start gap-3.5 backdrop-blur-xl">
+      <div class="p-2.5 bg-gradient-to-tr from-emerald-600 to-teal-400 text-white rounded-xl shrink-0 shadow-lg shadow-emerald-600/30 animate-pulse">
+        <i data-lucide="volume-2" class="w-5 h-5"></i>
+      </div>
+      <div class="flex-1 min-w-0 text-xs">
+        <div class="flex items-center gap-1.5 text-amber-300 font-extrabold text-[10px] uppercase tracking-wider">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>Ahlan Wa Sahlan</span>
+        </div>
+        <p class="font-bold text-white mt-1 text-sm leading-snug">Assalamu'alaikum Warahmatullahi Wabarakatuh</p>
+        <p class="text-emerald-100 text-[11px] mt-1 leading-relaxed">Selamat datang di Sistem Informasi Pengajuan Perbelanjaan Ma'had Imam Syafi'i.</p>
+      </div>
+      <button @click="showWelcomeToast = false" class="text-slate-400 hover:text-white transition p-1">✕</button>
+    </div>
+  </transition>
+
+  <!-- ================= HALAMAN LOGIN (AWALAN MASUK WAJIB LOGIN) ================= -->
+  <div v-if="!currentUser" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950">
+    <div class="max-w-md w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 border border-white/40 dark:border-slate-800 shadow-2xl relative overflow-hidden">
+      <div class="text-center mb-6">
+        <div class="inline-flex p-3 bg-gradient-to-tr from-emerald-600 to-teal-400 text-white rounded-2xl mb-3 shadow-lg shadow-emerald-600/30">
+          <i data-lucide="wallet" class="w-8 h-8"></i>
+        </div>
+        <h1 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">{{ profilLembaga.namaApp }}</h1>
+        <p class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mt-1">{{ profilLembaga.nama }}</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 italic mt-2">“{{ profilLembaga.tagline }}”</p>
+      </div>
+
+      <form @submit.prevent="handleLogin" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Username</label>
+          <input v-model="loginForm.username" type="text" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none text-sm transition" placeholder="Masukkan username">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Password</label>
+          <input v-model="loginForm.password" type="password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none text-sm transition" placeholder="••••••••">
+        </div>
+        <div v-if="loginError" class="p-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-300 text-xs font-semibold rounded-xl flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i> {{ loginError }}
+        </div>
+        <button type="submit" class="w-full py-3 px-4 btn-3d-primary text-white font-bold rounded-xl tracking-wide uppercase text-xs flex items-center justify-center gap-2">
+          <i data-lucide="log-in" class="w-4 h-4"></i> Masuk ke Sistem
+        </button>
+      </form>
+
+      <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+        <p class="font-bold text-slate-700 dark:text-slate-300 mb-2">Daftar Akun Pengguna:</p>
+        <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+          <div v-for="u in users" :key="u.username">• <b>{{ u.username }}</b> ({{ u.role }})</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LAYOUT UTAMA SISTEM (SETELAH LOGIN) ================= -->
+  <div v-else class="min-h-screen flex flex-col md:flex-row w-full overflow-hidden">
+    
+    <!-- SIDEBAR NAVIGASI DENGAN WIDGET KAS REAL-TIME -->
+    <aside class="no-print w-full md:w-64 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-200 flex flex-col shrink-0 border-r border-slate-800 shadow-xl z-20">
+      <div class="p-4 border-b border-slate-800/80 flex items-center gap-3">
+        <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-9 h-9 rounded-xl object-contain bg-white p-1 shadow-sm shrink-0">
+        <div v-else class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-sm shrink-0">
+          <i data-lucide="wallet" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h2 class="font-bold text-xs text-white tracking-tight truncate">{{ profilLembaga.namaApp }}</h2>
+          <p class="text-[10px] text-emerald-400 font-medium truncate">{{ profilLembaga.nama }}</p>
+        </div>
+      </div>
+
+      <!-- WIDGET MONITORING KAS REAL-TIME DI SIDEBAR -->
+      <div class="p-3 mx-3 mt-3 rounded-2xl bg-slate-800/60 border border-slate-700/60 shadow-inner space-y-2">
+        <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <span class="flex items-center gap-1"><i data-lucide="scale" class="w-3 h-3 text-emerald-400"></i> Saldo Kas Ma'had</span>
+          <span class="text-emerald-400">{{ Math.round((stats.nilaiRealisasi / (stats.totalPaguAlokasi || 1)) * 100) }}%</span>
+        </div>
+        <div>
+          <p class="text-[10px] text-slate-400">Sisa Pagu Berjalan:</p>
+          <p class="text-sm font-black text-emerald-400 truncate">Rp {{ formatNumber(stats.sisaSaldoKas) }}</p>
+        </div>
+        <div class="grid grid-cols-2 gap-1 pt-1.5 border-t border-slate-700/60 text-[9px] text-slate-400">
+          <div>Pagu: <b class="text-slate-200 block truncate">Rp {{ formatNumber(stats.totalPaguAlokasi) }}</b></div>
+          <div>Aktual: <b class="text-blue-300 block truncate">Rp {{ formatNumber(stats.nilaiRealisasi) }}</b></div>
+        </div>
+      </div>
+
+      <!-- Menu Navigasi -->
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto text-xs">
+        <button @click="currentTab = 'dashboard'" :class="navClass('dashboard')">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i> <span>Dashboard</span>
+        </button>
+        <button @click="currentTab = 'perencanaan'" :class="navClass('perencanaan')">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4 shrink-0"></i> <span>Perencanaan Usulan</span>
+        </button>
+        <button v-if="canAccessRapat" @click="currentTab = 'rapat'" :class="navClass('rapat')">
+          <i data-lucide="users" class="w-4 h-4 shrink-0"></i> <span>Rapat Koordinasi</span>
+        </button>
+        <button v-if="canAccessRealisasi" @click="currentTab = 'realisasi'" :class="navClass('realisasi')">
+          <i data-lucide="receipt" class="w-4 h-4 shrink-0"></i> <span>Realisasi Belanja</span>
+        </button>
+        <button @click="currentTab = 'laporan'" :class="navClass('laporan')">
+          <i data-lucide="printer" class="w-4 h-4 shrink-0"></i> <span>Laporan & Rekap</span>
+        </button>
+        
+        <div class="pt-3 pb-1">
+          <p class="px-3 text-[9px] font-extrabold uppercase tracking-wider text-slate-500">Konfigurasi</p>
+        </div>
+
+        <button @click="currentTab = 'profil'" :class="navClass('profil')">
+          <i data-lucide="building-2" class="w-4 h-4 shrink-0"></i> <span>Identitas & Pagu</span>
+        </button>
+        <button v-if="currentUser.role === 'Admin'" @click="currentTab = 'users'" :class="navClass('users')">
+          <i data-lucide="user-cog" class="w-4 h-4 shrink-0"></i> <span>Kelola Pengguna</span>
+        </button>
+        <button @click="currentTab = 'keamanan'" :class="navClass('keamanan')">
+          <i data-lucide="shield-check" class="w-4 h-4 shrink-0"></i> <span>Keamanan Sandi</span>
+        </button>
+        <button v-if="currentUser.role === 'Admin'" @click="currentTab = 'setting'" :class="navClass('setting')">
+          <i data-lucide="database" class="w-4 h-4 shrink-0"></i> <span>Backup & Restore</span>
+        </button>
+      </nav>
+
+      <!-- Profil Mini Petugas & Tombol Logout -->
+      <div class="p-3 border-t border-slate-800/80 bg-slate-950/60">
+        <div class="flex items-center gap-2.5">
+          <img v-if="profilBendahara.foto && currentUser.role === 'Bendahara'" :src="profilBendahara.foto" class="w-8 h-8 rounded-lg object-cover border border-slate-700 shadow shrink-0">
+          <div v-else class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center font-bold text-white shadow-inner uppercase text-xs shrink-0">
+            {{ currentUser.name.charAt(0) }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[11px] font-bold text-white truncate">{{ currentUser.name }}</p>
+            <p class="text-[9px] text-emerald-400 font-semibold truncate uppercase">{{ currentUser.role }}</p>
+          </div>
+          <button @click="handleLogout" title="Keluar Akun" class="text-slate-400 hover:text-rose-400 p-1 rounded transition shrink-0">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-100/50 dark:bg-slate-900/40">
+      
+      <!-- Topbar Header dengan Toggle Dark Mode yang Bekerja Sempurna -->
+      <header class="no-print bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-10 shadow-sm transition-colors duration-200">
+        <div class="min-w-0">
+          <h1 class="text-base font-extrabold text-slate-800 dark:text-white uppercase tracking-wide truncate">
+            {{ headerTitle }}
+          </h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ profilLembaga.nama }} • TA {{ profilLembaga.tahunAnggaran }}</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <!-- TOMBOL TOGGLE DARK MODE AKTIF -->
+          <button @click="toggleDarkMode()" type="button" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-sm flex items-center justify-center cursor-pointer" :title="isDarkMode ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'">
+            <i :data-lucide="isDarkMode ? 'sun' : 'moon'" class="w-4 h-4"></i>
+          </button>
+
+          <button v-if="canCreatePerencanaan" @click="openModalPerencanaan()" class="btn-3d-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> <span>Tambah Usulan</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Area Scrollable Konten -->
+      <div class="p-5 flex-1 overflow-y-auto space-y-5">
+
+        <!-- ================= TAB: DASHBOARD ================= -->
+        <section v-if="currentTab === 'dashboard'" class="space-y-5">
+          <div v-if="stats.menunggu > 0 && canAccessRapat" class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 border border-amber-200 dark:border-amber-800 shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-amber-500 text-white rounded-xl shadow-sm">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-amber-950 dark:text-amber-200">Ada Usulan Menunggu Pembahasan</p>
+                <p class="text-[11px] text-amber-700 dark:text-amber-300">Terdapat {{ stats.menunggu }} usulan baru siap dibahas pada agenda rapat koordinasi.</p>
+              </div>
+            </div>
+            <button @click="currentTab = 'rapat'" class="text-xs font-bold px-3 py-1.5 btn-3d-dark text-white rounded-xl">
+              Agenda Rapat
+            </button>
+          </div>
+
+          <!-- Metrik Ringkas -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div class="card-3d p-4 rounded-2xl">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Usulan</span>
+                <div class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i data-lucide="file-text" class="w-3.5 h-3.5"></i></div>
+              </div>
+              <p class="text-xl font-black text-slate-800 dark:text-white mt-1">{{ stats.totalCount }}</p>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Total: <b>Rp {{ formatNumber(stats.totalNilai) }}</b></p>
+            </div>
+
+            <div class="card-3d p-4 rounded-2xl">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Disetujui</span>
+                <div class="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></div>
+              </div>
+              <p class="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{{ stats.disetujui }}</p>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Pagu: <b>Rp {{ formatNumber(stats.nilaiDisetujui) }}</b></p>
+            </div>
+
+            <div class="card-3d p-4 rounded-2xl">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Selesai Realisasi</span>
+                <div class="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300"><i data-lucide="wallet" class="w-3.5 h-3.5"></i></div>
+              </div>
+              <p class="text-xl font-black text-blue-600 dark:text-blue-400 mt-1">{{ stats.selesai }}</p>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Aktual: <b>Rp {{ formatNumber(stats.nilaiRealisasi) }}</b></p>
+            </div>
+
+            <div class="card-3d p-4 rounded-2xl">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Menunggu Rapat</span>
+                <div class="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300"><i data-lucide="clock" class="w-3.5 h-3.5"></i></div>
+              </div>
+              <p class="text-xl font-black text-amber-600 dark:text-amber-400 mt-1">{{ stats.menunggu }}</p>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Nilai: <b>Rp {{ formatNumber(stats.nilaiMenunggu) }}</b></p>
+            </div>
+          </div>
+
+          <!-- Status Rincian -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div class="card-3d p-3 rounded-xl text-center">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">Ditunda</span>
+              <p class="text-lg font-black text-orange-600 dark:text-orange-400 mt-0.5">{{ stats.ditunda }}</p>
+            </div>
+            <div class="card-3d p-3 rounded-xl text-center">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">Dijadwalkan</span>
+              <p class="text-lg font-black text-indigo-600 dark:text-indigo-400 mt-0.5">{{ stats.dijadwalkan }}</p>
+            </div>
+            <div class="card-3d p-3 rounded-xl text-center bg-purple-50/40 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800">
+              <span class="text-[11px] text-purple-700 dark:text-purple-300 font-bold">Dalam Proses</span>
+              <p class="text-lg font-black text-purple-700 dark:text-purple-300 mt-0.5">{{ stats.dalamProses }}</p>
+            </div>
+            <div class="card-3d p-3 rounded-xl text-center">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">Dibatalkan</span>
+              <p class="text-lg font-black text-slate-400 dark:text-slate-500 mt-0.5">{{ stats.dibatalkan }}</p>
+            </div>
+            <div class="card-3d p-3 rounded-xl text-center col-span-2 sm:col-span-1">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">Efisiensi Belanja</span>
+              <p class="text-base font-black text-emerald-600 dark:text-emerald-400 mt-0.5 truncate">Rp {{ formatNumber(stats.selisihHemat) }}</p>
+            </div>
+          </div>
+
+          <!-- PERINGATAN BATAS ANGGARAN (BUDGET THRESHOLD WARNING) PADA KOMPONEN -->
+          <div class="card-3d p-4 rounded-2xl">
+            <div class="flex justify-between items-center mb-3">
+              <div>
+                <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="layers" class="w-4 h-4 text-emerald-600"></i> Plafon Pagu Komponen Operasional
+                </h3>
+                <p class="text-[10px] text-slate-400">Monitoring serapan belanja operasional dengan indikator ambang batas 90%</p>
+              </div>
+              <button @click="currentTab = 'profil'" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline">Atur Kuota Pagu →</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div v-for="komp in masterKomponen" :key="komp" class="p-3 bg-slate-50/70 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/60 relative overflow-hidden">
+                <div v-if="getKomponenPersen(komp) > 100" class="absolute top-0 right-0 bg-rose-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl uppercase tracking-tighter">
+                  Over Budget
+                </div>
+                <div v-else-if="getKomponenPersen(komp) >= 90" class="absolute top-0 right-0 bg-amber-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl uppercase tracking-tighter">
+                  Kritis ≥ 90%
+                </div>
+
+                <div class="flex justify-between items-center mb-1">
+                  <span class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">{{ komp }}</span>
+                  <span class="text-[10px] font-bold" :class="getKomponenPersen(komp) > 100 ? 'text-rose-600 dark:text-rose-400' : (getKomponenPersen(komp) >= 90 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400')">
+                    {{ getKomponenPersen(komp) }}%
+                  </span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mb-1.5">
+                  <div class="h-full rounded-full transition-all duration-300" :style="{ width: Math.min(getKomponenPersen(komp), 100) + '%' }" :class="getKomponenPersen(komp) > 100 ? 'bg-rose-600' : (getKomponenPersen(komp) >= 90 ? 'bg-amber-500' : 'bg-emerald-500')"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400">
+                  <span>Terpakai: <b>Rp {{ formatNumber(getKomponenTotal(komp)) }}</b></span>
+                  <span>Pagu: Rp {{ formatNumber(paguKomponen[komp] || 0) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SERAPAN PER JENJANG DENGAN THRESHOLD WARNING -->
+          <div class="card-3d p-4 rounded-2xl">
+            <div class="flex justify-between items-center mb-3">
+              <div>
+                <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i> Serapan Pagu Anggaran per Jenjang
+                </h3>
+                <p class="text-[10px] text-slate-400">Monitoring realisasi kuota tahunan seluruh divisi dan jenjang pendidikan</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+              <div v-for="j in masterJenjang" :key="j" class="p-3 bg-slate-50/70 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/60 relative overflow-hidden">
+                <div v-if="getJenjangPersen(j) > 100" class="absolute top-0 right-0 bg-rose-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl uppercase">
+                  Over Budget
+                </div>
+                <div v-else-if="getJenjangPersen(j) >= 90" class="absolute top-0 right-0 bg-amber-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl uppercase">
+                  Kritis ≥ 90%
+                </div>
+
+                <div class="flex justify-between items-center mb-1">
+                  <span class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">{{ j }}</span>
+                  <span class="text-[10px] font-bold" :class="getJenjangPersen(j) > 100 ? 'text-rose-600 dark:text-rose-400' : (getJenjangPersen(j) >= 90 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400')">
+                    {{ getJenjangPersen(j) }}%
+                  </span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mb-1.5">
+                  <div class="h-full rounded-full transition-all duration-300" :style="{ width: Math.min(getJenjangPersen(j), 100) + '%' }" :class="getJenjangPersen(j) > 100 ? 'bg-rose-600' : (getJenjangPersen(j) >= 90 ? 'bg-amber-500' : 'bg-emerald-500')"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400">
+                  <span>Terpakai: <b>Rp {{ formatNumber(getJenjangTotal(j)) }}</b></span>
+                  <span>Pagu: Rp {{ formatNumber(paguJenjang[j] || 0) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabel 5 Usulan Terbaru -->
+          <div class="card-3d rounded-2xl overflow-hidden">
+            <div class="p-3.5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/40">
+              <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider">5 Usulan Rencana Terbaru</h3>
+              <button @click="currentTab = 'perencanaan'" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">Lihat Semua →</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                <thead class="bg-slate-100/70 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">
+                  <tr>
+                    <th class="p-3">Kode</th>
+                    <th class="p-3">Uraian</th>
+                    <th class="p-3">Jenjang</th>
+                    <th class="p-3">Nilai (Rp)</th>
+                    <th class="p-3">Sifat</th>
+                    <th class="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr v-for="item in perencanaans.slice(0, 5)" :key="item.id" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-200">{{ item.nomor }}</td>
+                    <td class="p-3 font-medium text-slate-800 dark:text-white">{{ item.uraian }}</td>
+                    <td class="p-3">{{ item.jenjang }}</td>
+                    <td class="p-3 font-bold">Rp {{ formatNumber(item.total) }}</td>
+                    <td class="p-3"><span :class="sifatBadge(item.sifat)">{{ item.sifat }}</span></td>
+                    <td class="p-3"><span :class="statusBadge(item.status)">{{ item.status }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB: PERENCANAAN ================= -->
+        <section v-if="currentTab === 'perencanaan'" class="space-y-4">
+          <div class="card-3d p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+            <input v-model="filterPerencanaan.search" type="text" placeholder="Cari kode, uraian, pengusul..." class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl text-xs outline-none">
+            <select v-model="filterPerencanaan.jenjang" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl text-xs outline-none">
+              <option value="">Semua Jenjang</option>
+              <option v-for="j in masterJenjang" :key="j" :value="j">{{ j }}</option>
+            </select>
+            <select v-model="filterPerencanaan.status" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl text-xs outline-none">
+              <option value="">Semua Status</option>
+              <option value="Menunggu Rapat">Menunggu Rapat</option>
+              <option value="Disetujui">Disetujui</option>
+              <option value="Ditunda">Ditunda</option>
+              <option value="Dijadwalkan">Dijadwalkan</option>
+              <option value="Dalam Proses">Dalam Proses</option>
+              <option value="Selesai">Selesai</option>
+              <option value="Dibatalkan">Dibatalkan</option>
+            </select>
+            <select v-model="filterPerencanaan.sifat" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl text-xs outline-none">
+              <option value="">Semua Sifat</option>
+              <option value="Mendesak">Mendesak</option>
+              <option value="Penting">Penting</option>
+              <option value="Prioritas">Prioritas</option>
+              <option value="Tambahan">Tambahan</option>
+            </select>
+            <select v-model="filterPerencanaan.periodeHijriyah" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl text-xs outline-none font-semibold text-emerald-700 dark:text-emerald-400">
+              <option value="">Semua Periode</option>
+              <option value="sem_ganjil">Semester Ganjil (Jul - Des)</option>
+              <option value="sem_genap">Semester Genap (Jan - Jun)</option>
+              <option value="ramadhan">Bulan Ramadhan & Idul Fitri</option>
+              <option value="ajaran_baru">Awal Tahun Ajaran Baru</option>
+            </select>
+          </div>
+
+          <div class="card-3d rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300 min-w-[750px]">
+                <thead class="bg-slate-100/70 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                  <tr>
+                    <th class="p-3">Kode</th>
+                    <th class="p-3">Tanggal</th>
+                    <th class="p-3">Pengusul & Jenjang</th>
+                    <th class="p-3">Uraian Kebutuhan</th>
+                    <th class="p-3">Total Usulan</th>
+                    <th class="p-3">Pagu Disetujui</th>
+                    <th class="p-3">Sifat</th>
+                    <th class="p-3">Status</th>
+                    <th class="p-3 text-center no-print">Aksi Lengkap</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr v-for="item in filteredPerencanaans" :key="item.id" class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ item.nomor }}</td>
+                    <td class="p-3 whitespace-nowrap">{{ item.tanggal }}</td>
+                    <td class="p-3">
+                      <div class="font-bold text-slate-800 dark:text-white leading-tight">{{ item.pengusul }}</div>
+                      <div class="text-[10px] text-slate-400 mt-0.5">{{ item.jenjang }} <span v-if="item.komponenOperasional" class="text-emerald-600 dark:text-emerald-400">• {{ item.komponenOperasional }}</span></div>
+                    </td>
+                    <td class="p-3">
+                      <div class="font-medium text-slate-800 dark:text-slate-100 leading-tight">{{ item.uraian }}</div>
+                      <div class="text-[10px] text-slate-400 mt-0.5">{{ item.jumlah }} {{ item.satuan }} @ Rp {{ formatNumber(item.hargaSatuan) }}</div>
+                    </td>
+                    <td class="p-3 font-bold text-slate-800 dark:text-white whitespace-nowrap">Rp {{ formatNumber(item.total) }}</td>
+                    <td class="p-3 font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
+                      {{ item.nominalDisetujui ? 'Rp ' + formatNumber(item.nominalDisetujui) : '-' }}
+                    </td>
+                    <td class="p-3 whitespace-nowrap"><span :class="sifatBadge(item.sifat)">{{ item.sifat }}</span></td>
+                    <td class="p-3 whitespace-nowrap"><span :class="statusBadge(item.status)">{{ item.status }}</span></td>
+                    
+                    <td class="p-3 text-center no-print whitespace-nowrap">
+                      <div class="inline-flex items-center gap-1.5 bg-slate-100/90 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <button @click="bukaDisposisi(item)" class="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-amber-50 text-amber-600 shadow-sm border border-slate-200/80 dark:border-slate-600 transition flex items-center justify-center" title="Cetak Disposisi">
+                          <i data-lucide="file-check" class="w-4 h-4"></i>
+                        </button>
+                        <button @click="viewDetailPerencanaan(item)" class="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-emerald-50 text-emerald-600 shadow-sm border border-slate-200/80 dark:border-slate-600 transition flex items-center justify-center" title="Detail & Riwayat">
+                          <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                        <button @click="openModalUbahStatus(item)" class="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-purple-50 text-purple-600 shadow-sm border border-slate-200/80 dark:border-slate-600 transition flex items-center justify-center" title="Ubah Status">
+                          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                        <button v-if="canEditItem(item)" @click="editPerencanaan(item)" class="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-blue-50 text-blue-600 shadow-sm border border-slate-200/80 dark:border-slate-600 transition flex items-center justify-center" title="Edit Data">
+                          <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        </button>
+                        <button v-if="canDeleteItem(item)" @click="deletePerencanaan(item.id)" class="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-rose-50 text-rose-600 shadow-sm border border-slate-200/80 dark:border-slate-600 transition flex items-center justify-center" title="Hapus Data">
+                          <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr v-if="filteredPerencanaans.length === 0">
+                    <td colspan="9" class="p-8 text-center text-slate-400 italic">Tidak ada usulan perencanaan yang cocok dengan filter.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB: IDENTITAS & PAGU ================= -->
+        <section v-if="currentTab === 'profil'" class="space-y-5 max-w-5xl">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card-3d p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+                  <h3 class="font-black text-slate-800 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="landmark" class="w-4 h-4 text-emerald-600"></i> Identitas Lembaga
+                  </h3>
+                </div>
+
+                <div class="flex items-center gap-3.5 mb-4">
+                  <div class="relative group shrink-0">
+                    <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-16 h-16 rounded-2xl object-contain border border-slate-200 dark:border-slate-700 p-1 bg-white shadow-sm">
+                    <div v-else class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-slate-800 border border-dashed border-emerald-300 flex items-center justify-center text-emerald-600 text-[11px] font-bold text-center p-1">
+                      No Logo
+                    </div>
+                    <label class="absolute -bottom-1 -right-1 bg-emerald-600 text-white p-1 rounded-full shadow cursor-pointer hover:bg-emerald-700 transition" title="Ganti Logo">
+                      <i data-lucide="camera" class="w-3 h-3"></i>
+                      <input type="file" @change="uploadLogoLembaga" class="hidden" accept="image/*">
+                    </label>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-slate-800 dark:text-white">Logo Resmi Lembaga</p>
+                    <p class="text-[10px] text-slate-400">Tampil pada Kop Surat & Header Laporan</p>
+                  </div>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                  <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Nama Aplikasi</label>
+                    <input v-model="profilLembaga.namaApp" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Ma'had</label>
+                    <input v-model="profilLembaga.nama" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Yayasan</label>
+                    <input v-model="profilLembaga.yayasan" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Alamat</label>
+                    <textarea v-model="profilLembaga.alamat" rows="2" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Tahun Anggaran</label>
+                      <input v-model="profilLembaga.tahunAnggaran" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kontak</label>
+                      <input v-model="profilLembaga.kontak" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-3d p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+                  <h3 class="font-black text-slate-800 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i> Identitas Bendahara
+                  </h3>
+                </div>
+
+                <div class="flex items-center gap-3.5 mb-4">
+                  <div class="relative group shrink-0">
+                    <img v-if="profilBendahara.foto" :src="profilBendahara.foto" class="w-16 h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div v-else class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-[11px] font-bold text-center p-1">
+                      No Foto
+                    </div>
+                    <label class="absolute -bottom-1 -right-1 bg-emerald-600 text-white p-1 rounded-full shadow cursor-pointer hover:bg-emerald-700 transition" title="Ganti Foto">
+                      <i data-lucide="camera" class="w-3 h-3"></i>
+                      <input type="file" @change="uploadFotoBendahara" class="hidden" accept="image/*">
+                    </label>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-slate-800 dark:text-white">Foto Profil Bendahara</p>
+                    <p class="text-[10px] text-slate-400">Tanda Tangan & Otorisasi Laporan</p>
+                  </div>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                  <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Lengkap</label>
+                    <input v-model="profilBendahara.nama" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">NIP / ID</label>
+                      <input v-model="profilBendahara.nip" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">No. WhatsApp</label>
+                      <input v-model="profilBendahara.telepon" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Email</label>
+                    <input v-model="profilBendahara.email" type="email" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Jabatan Lembaga</label>
+                    <input v-model="profilBendahara.jabatan" type="text" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-3d p-5 rounded-2xl">
+            <div class="pb-3 mb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 class="font-black text-slate-800 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="layers" class="w-4 h-4 text-emerald-600"></i> Plafond Pagu Komponen Operasional (Rp)
+                </h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Batas pagu belanja operasional harian: Dana taktis, kebersihan, ATK, dan konsumsi rapat.</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div v-for="komp in masterKomponen" :key="komp">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">{{ komp }}</label>
+                <input v-model.number="paguKomponen[komp]" type="number" min="0" step="50000" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none font-semibold">
+              </div>
+            </div>
+          </div>
+
+          <div class="card-3d p-5 rounded-2xl">
+            <div class="pb-3 mb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 class="font-black text-slate-800 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="sliders" class="w-4 h-4 text-emerald-600"></i> Alokasi Plafond Pagu per Jenjang (Rp)
+                </h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Kapasitas batasan pagu belanja selama satu tahun anggaran.</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+              <div v-for="j in masterJenjang" :key="j">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">{{ j }}</label>
+                <input v-model.number="paguJenjang[j]" type="number" min="0" step="50000" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none font-semibold">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-1">
+            <button @click="simpanProfilSemua()" class="btn-3d-primary text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl flex items-center gap-2">
+              <i data-lucide="save" class="w-3.5 h-3.5"></i> Simpan Konfigurasi & Pagu
+            </button>
+          </div>
+        </section>
+
+        <!-- ================= TAB: KELOLA PENGGUNA ================= -->
+        <section v-if="currentTab === 'users' && currentUser.role === 'Admin'" class="space-y-4 max-w-4xl">
+          <div class="card-3d p-5 rounded-2xl">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h3 class="font-black text-slate-800 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i> Manajemen Hak Akses Pengguna
+                </h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Tambah akun pengusul/staf baru atau kelola akun sistem</p>
+              </div>
+              <button @click="openModalAddUser()" class="btn-3d-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Tambah Pengguna
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                <thead class="bg-slate-100/70 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">
+                  <tr>
+                    <th class="p-3">Nama Petugas</th>
+                    <th class="p-3">Username</th>
+                    <th class="p-3">Hak Akses (Role)</th>
+                    <th class="p-3 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr v-for="(u, idx) in users" :key="u.username" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td class="p-3 font-bold text-slate-800 dark:text-white">{{ u.name }}</td>
+                    <td class="p-3 font-mono">{{ u.username }}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">{{ u.role }}</span></td>
+                    <td class="p-3 text-center">
+                      <button v-if="u.username !== currentUser.username" @click="hapusUser(idx)" class="p-1 rounded bg-rose-50 dark:bg-rose-950/50 text-rose-600 hover:bg-rose-100 transition" title="Hapus Akun">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                      </button>
+                      <span v-else class="text-[10px] text-slate-400 italic">Sedang Digunakan</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB: KEAMANAN ================= -->
+        <section v-if="currentTab === 'keamanan'" class="space-y-4 max-w-lg">
+          <div class="card-3d p-5 rounded-2xl">
+            <div class="flex items-center gap-3 pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+              <div class="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
+                <i data-lucide="key" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider">Ganti Kata Sandi</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Akun: <b class="text-emerald-700 dark:text-emerald-400">{{ currentUser.username }}</b> ({{ currentUser.role }})</p>
+              </div>
+            </div>
+
+            <form @submit.prevent="handleGantiPassword" class="space-y-3 text-xs">
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kata Sandi Saat Ini</label>
+                <input v-model="formPassword.lama" type="password" required class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="••••••••">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kata Sandi Baru</label>
+                <input v-model="formPassword.baru" type="password" minlength="6" required class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Minimal 6 karakter">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Konfirmasi Kata Sandi Baru</label>
+                <input v-model="formPassword.konfirmasi" type="password" minlength="6" required class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Ulangi kata sandi baru">
+              </div>
+
+              <div v-if="passwordNotice.text" :class="passwordNotice.isError ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'" class="p-2.5 border rounded-xl font-medium text-xs flex items-center gap-2">
+                <i :data-lucide="passwordNotice.isError ? 'alert-circle' : 'check-circle'" class="w-4 h-4 shrink-0"></i>
+                <span>{{ passwordNotice.text }}</span>
+              </div>
+
+              <div class="pt-2">
+                <button type="submit" class="w-full py-2.5 btn-3d-primary text-white font-bold rounded-xl tracking-wider uppercase text-xs">
+                  Perbarui Kata Sandi
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ================= TAB: RAPAT KOORDINASI ================= -->
+        <section v-if="currentTab === 'rapat' && canAccessRapat" class="space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Sidang Rapat Koordinasi & Notulensi</h2>
+              <p class="text-[11px] text-slate-400">Pembahasan usulan, penetapan pagu, berita acara, dan notulensi resmi</p>
+            </div>
+            <button @click="openModalRapat()" class="btn-3d-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+              <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> Agenda Rapat Baru
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <div v-for="rapat in rapats" :key="rapat.id" class="card-3d rounded-2xl p-4 flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start mb-2">
+                  <span class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-200 dark:border-emerald-800">{{ rapat.nomor }}</span>
+                  <span :class="rapat.status === 'Selesai' ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300'" class="text-[10px] px-2 py-0.5 rounded-full font-bold">
+                    {{ rapat.status }}
+                  </span>
+                </div>
+                <h3 class="font-bold text-slate-800 dark:text-white text-xs mt-1.5">{{ rapat.agenda }}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Tanggal: {{ rapat.tanggal }} ({{ rapat.waktuMulai || '08:00' }} - {{ rapat.waktuSelesai || 'Selesai' }})</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Tempat: {{ rapat.tempat }}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Pimpinan: <b>{{ rapat.pimpinan }}</b> | Notulis: <b>{{ rapat.notulis || '-' }}</b></p>
+                
+                <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[11px] flex justify-between text-slate-600 dark:text-slate-400">
+                  <span>Usulan Terdaftar:</span>
+                  <span class="font-bold text-slate-800 dark:text-white">{{ rapat.itemIds.length }} Pembahasan</span>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-2.5 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                <button @click="bukaSidangRapat(rapat)" class="w-full py-1.5 btn-3d-primary text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1">
+                  <i :data-lucide="rapat.status === 'Selesai' ? 'clipboard-check' : 'gavel'" class="w-3.5 h-3.5"></i>
+                  {{ rapat.status === 'Selesai' ? 'Buka Hasil Notulensi Sidang' : 'Pimpin Pembahasan Sidang' }}
+                </button>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button @click="cetakBeritaAcara(rapat)" class="py-1 btn-3d-dark text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1" title="Cetak Berita Acara A4">
+                    <i data-lucide="file-text" class="w-3 h-3"></i> Berita Acara
+                  </button>
+                  <button @click="salinNotulenWA(rapat)" class="py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1" title="Salin Notulen ke WhatsApp">
+                    <i data-lucide="share-2" class="w-3 h-3"></i> Salin ke WA
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB: REALISASI ================= -->
+        <section v-if="currentTab === 'realisasi' && canAccessRealisasi" class="space-y-4">
+          <div class="card-3d rounded-2xl overflow-hidden">
+            <div class="p-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex justify-between items-center">
+              <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider">Eksekusi Realisasi Pembelanjaan Disetujui</h3>
+              <p class="text-[10px] text-slate-400">Pagu mengacu pada hasil keputusan sidang rapat koordinasi</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300 min-w-[760px]">
+                <thead class="bg-slate-100/70 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">
+                  <tr>
+                    <th class="p-3">Kode</th>
+                    <th class="p-3">Uraian Belanja</th>
+                    <th class="p-3">Pagu Disetujui</th>
+                    <th class="p-3">Realisasi</th>
+                    <th class="p-3">Bukti Nota</th>
+                    <th class="p-3">Status</th>
+                    <th class="p-3 text-center">Aksi Realisasi & Kas</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr v-for="item in listRealisasi" :key="item.id" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-200">{{ item.nomor }}</td>
+                    <td class="p-3 font-medium text-slate-800 dark:text-white">{{ item.uraian }}</td>
+                    <td class="p-3 font-bold text-emerald-800 dark:text-emerald-400">Rp {{ formatNumber(item.nominalDisetujui || item.total) }}</td>
+                    <td class="p-3 font-bold text-blue-700 dark:text-blue-400">Rp {{ formatNumber(item.realisasiNilai || 0) }}</td>
+                    <td class="p-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-semibold">{{ item.buktiNota || '-' }}</span>
+                        <button v-if="item.fotoNota" @click="previewImageSrc = item.fotoNota" class="text-emerald-600 dark:text-emerald-400 hover:underline p-0.5 rounded" title="Lihat Foto Nota">
+                          <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                    </td>
+                    <td class="p-3"><span :class="statusBadge(item.status)">{{ item.status }}</span></td>
+                    <td class="p-3 text-center whitespace-nowrap">
+                      <div class="inline-flex items-center gap-1">
+                        <button @click="openModalRealisasi(item)" class="px-2.5 py-1 btn-3d-primary text-white rounded-xl text-xs font-bold shadow flex items-center gap-1">
+                          <i data-lucide="receipt" class="w-3.5 h-3.5"></i> Input Belanja
+                        </button>
+                        <button v-if="item.status === 'Selesai'" @click="bukaKwitansiBKK(item)" class="px-2.5 py-1 btn-3d-dark text-white rounded-xl text-xs font-bold shadow flex items-center gap-1" title="Cetak Kwitansi / Bukti Kas Keluar (BKK)">
+                          <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-amber-300"></i> Cetak BKK
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr v-if="listRealisasi.length === 0">
+                    <td colspan="7" class="p-8 text-center text-slate-400 italic">Belum ada usulan disetujui yang siap direalisasikan.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB: LAPORAN & EKSPOR MULTI-SHEET ================= -->
+        <section v-if="currentTab === 'laporan'" class="space-y-4">
+          <div class="no-print card-3d p-3.5 rounded-2xl flex flex-wrap justify-between items-center gap-3">
+            <div class="flex flex-wrap items-center gap-2.5 text-xs">
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-0.5">Jenis Laporan:</label>
+                <select v-model="jenisLaporan" class="px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+                  <option value="perencanaan">Usulan Perencanaan</option>
+                  <option value="realisasi">Rencana vs Realisasi</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-0.5">Jenjang:</label>
+                <select v-model="filterLaporan.jenjang" class="px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+                  <option value="">Semua Jenjang</option>
+                  <option v-for="j in masterJenjang" :key="j" :value="j">{{ j }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-0.5">Periode:</label>
+                <select v-model="filterLaporan.periodeHijriyah" class="px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none font-semibold text-emerald-700 dark:text-emerald-400">
+                  <option value="">Semua Periode</option>
+                  <option value="sem_ganjil">Semester Ganjil (Jul - Des)</option>
+                  <option value="sem_genap">Semester Genap (Jan - Jun)</option>
+                  <option value="ramadhan">Bulan Ramadhan & Idul Fitri</option>
+                  <option value="ajaran_baru">Awal Tahun Ajaran Baru</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-0.5">Mulai:</label>
+                <input v-model="filterLaporan.startDate" type="date" class="px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-0.5">Sampai:</label>
+                <input v-model="filterLaporan.endDate" type="date" class="px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <button @click="printReport()" class="btn-3d-dark text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak / PDF
+              </button>
+              
+              <button @click="exportToExcel()" class="border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-600"></i> Ekspor Tabel Ini
+              </button>
+
+              <!-- EKSPOR MULTI-SHEET COMPREHENSIVE SPREADSHEET -->
+              <button @click="exportMultiSheetExcel()" class="btn-3d-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-amber-300"></i> Ekspor Excel Lengkap (Multi-Sheet)
+              </button>
+            </div>
+          </div>
+
+          <!-- Lembar Cetak Laporan -->
+          <div class="card-3d p-8 rounded-3xl print:border-none print:shadow-none bg-white dark:bg-slate-900">
+            <div class="flex items-center gap-4 pb-4 mb-6 border-b-2 border-slate-900 dark:border-slate-100">
+              <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-16 h-16 object-contain shrink-0">
+              <div class="flex-1 text-center">
+                <h2 class="text-base font-black text-slate-900 dark:text-white uppercase tracking-wider">{{ profilLembaga.yayasan }}</h2>
+                <h1 class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ profilLembaga.nama }}</h1>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">{{ profilLembaga.alamat }} • Telp: {{ profilLembaga.kontak }}</p>
+                <p class="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider mt-1">
+                  {{ jenisLaporan === 'perencanaan' ? 'DAFTAR PERENCANAAN PEMBELANJAAN ANGGARAN' : 'LAPORAN REKAPITULASI RENCANA VS REALISASI' }} (TA {{ profilLembaga.tahunAnggaran }})
+                </p>
+                <p v-if="filterLaporan.startDate || filterLaporan.endDate || filterLaporan.periodeHijriyah" class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Periode: {{ filterLaporan.periodeHijriyah || (filterLaporan.startDate || 'Awal') + ' s/d ' + (filterLaporan.endDate || 'Sekarang') }}
+                </p>
+              </div>
+            </div>
+
+            <table class="w-full text-left text-xs border border-slate-300 dark:border-slate-700">
+              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="p-2 border border-slate-300 dark:border-slate-700 text-center">No</th>
+                  <th class="p-2 border border-slate-300 dark:border-slate-700">Kode</th>
+                  <th class="p-2 border border-slate-300 dark:border-slate-700">Uraian Kebutuhan</th>
+                  <th class="p-2 border border-slate-300 dark:border-slate-700">Jenjang</th>
+                  <th class="p-2 border border-slate-300 dark:border-slate-700">Sifat</th>
+                  <th class="p-2 border border-slate-300 dark:border-slate-700 text-right">Rencana (Rp)</th>
+                  <th v-if="jenisLaporan === 'realisasi'" class="p-2 border border-slate-300 dark:border-slate-700 text-right">Pagu Rapat (Rp)</th>
+                  <th v-if="jenisLaporan === 'realisasi'" class="p-2 border border-slate-300 dark:border-slate-700 text-right">Realisasi (Rp)</th>
+                  <th v-if="jenisLaporan === 'realisasi'" class="p-2 border border-slate-300 dark:border-slate-700 text-right">Selisih (Rp)</th>
+                  <th class="p-2 border border-slate-300 dark:border-slate-700">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, idx) in listLaporanData" :key="item.id">
+                  <td class="p-2 border border-slate-300 dark:border-slate-700 text-center">{{ idx + 1 }}</td>
+                  <td class="p-2 border border-slate-300 dark:border-slate-700 font-mono font-bold">{{ item.nomor }}</td>
+                  <td class="p-2 border border-slate-300 dark:border-slate-700 font-medium">{{ item.uraian }}</td>
+                  <td class="p-2 border border-slate-300 dark:border-slate-700">{{ item.jenjang }}</td>
+                  <td class="p-2 border border-slate-300 dark:border-slate-700">{{ item.sifat }}</td>
+                  <td class="p-2 border border-slate-300 dark:border-slate-700 text-right font-semibold">{{ formatNumber(item.total) }}</td>
+                  <td v-if="jenisLaporan === 'realisasi'" class="p-2 border border-slate-300 dark:border-slate-700 text-right font-semibold text-emerald-800 dark:text-emerald-400">{{ formatNumber(item.nominalDisetujui || item.total) }}</td>
+                  <td v-if="jenisLaporan === 'realisasi'" class="p-2 border border-slate-300 dark:border-slate-700 text-right font-semibold text-blue-700 dark:text-blue-400">{{ formatNumber(item.realisasiNilai || 0) }}</td>
+                  <td v-if="jenisLaporan === 'realisasi'" class="p-2 border border-slate-300 dark:border-slate-700 text-right font-semibold">{{ formatNumber((item.nominalDisetujui || item.total) - (item.realisasiNilai || 0)) }}</td>
+                  <td class="p-2 border border-slate-300 dark:border-slate-700">{{ item.status }}</td>
+                </tr>
+                <tr v-if="listLaporanData.length === 0">
+                  <td :colspan="jenisLaporan === 'realisasi' ? 10 : 7" class="p-6 text-center text-slate-400 italic">Tidak ada data belanja sesuai filter laporan.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="mt-6 flex justify-end">
+              <div class="w-72 text-xs space-y-1 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div class="flex justify-between font-bold">
+                  <span>Total Anggaran:</span>
+                  <span>Rp {{ formatNumber(laporanTotals.totalRencana) }}</span>
+                </div>
+                <div v-if="jenisLaporan === 'realisasi'" class="flex justify-between font-bold text-blue-700 dark:text-blue-400">
+                  <span>Total Realisasi:</span>
+                  <span>Rp {{ formatNumber(laporanTotals.totalAktual) }}</span>
+                </div>
+                <div v-if="jenisLaporan === 'realisasi'" class="flex justify-between font-bold text-emerald-700 dark:text-emerald-400">
+                  <span>Efisiensi / Sisa:</span>
+                  <span>Rp {{ formatNumber(laporanTotals.totalHemat) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-12 pt-6 flex justify-between text-xs text-center">
+              <div>
+                <p>Mengetahui,</p>
+                <p class="font-bold text-slate-800 dark:text-white mt-1">Pimpinan Ma'had</p>
+                <div class="h-16"></div>
+                <p class="font-bold underline text-slate-900 dark:text-white">Mudir Ma'had Imam Syafi'i</p>
+              </div>
+              <div>
+                <p>Serang, {{ new Date().toLocaleDateString('id-ID') }}</p>
+                <p class="font-bold text-slate-800 dark:text-white mt-1">Bendahara Lembaga</p>
+                <div class="h-16 flex items-center justify-center">
+                  <img v-if="profilBendahara.foto" :src="profilBendahara.foto" class="h-12 w-12 rounded-full object-cover border border-slate-300 shadow-sm opacity-90">
+                </div>
+                <p class="font-bold underline text-slate-900 dark:text-white">{{ profilBendahara.nama }}</p>
+                <p class="text-[10px] text-slate-500">NIP. {{ profilBendahara.nip }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB: SETTING & BACKUP ================= -->
+        <section v-if="currentTab === 'setting' && currentUser.role === 'Admin'" class="space-y-4 max-w-xl">
+          <div class="card-3d p-5 rounded-2xl">
+            <h3 class="font-black text-slate-800 dark:text-white text-xs uppercase tracking-wider mb-1">Cadangan Basis Data</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Simpan atau pulihkan seluruh data usulan, riwayat notulensi rapat, pagu, dan pengguna ke berkas JSON.</p>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button @click="backupDataJSON()" class="flex-1 py-2.5 px-3 btn-3d-primary text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow">
+                <i data-lucide="download" class="w-4 h-4"></i> Download Backup (.json)
+              </button>
+              
+              <label class="flex-1 py-2.5 px-3 btn-3d-dark text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 cursor-pointer text-center shadow">
+                <i data-lucide="upload" class="w-4 h-4"></i> Restore Database (.json)
+                <input type="file" @change="restoreDataJSON" class="hidden" accept=".json">
+              </label>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= MODAL TAMBAH/EDIT PERENCANAAN ================= -->
+  <div v-if="showModalPerencanaan" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 max-h-[90vh] overflow-y-auto card-3d">
+      <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="font-black text-slate-800 dark:text-white text-xs uppercase tracking-wider">{{ formPerencanaan.id ? 'Edit Usulan Perencanaan' : 'Tambah Usulan Perencanaan' }}</h3>
+        <button @click="showModalPerencanaan = false" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+
+      <form @submit.prevent="savePerencanaan" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Kode (Otomatis)</label>
+            <input v-model="formPerencanaan.nomor" type="text" readonly class="w-full px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Tanggal</label>
+            <input v-model="formPerencanaan.tanggal" type="date" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Pengusul</label>
+            <input v-model="formPerencanaan.pengusul" type="text" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Jenjang / Bagian</label>
+            <select v-model="formPerencanaan.jenjang" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+              <option v-for="j in masterJenjang" :key="j" :value="j">{{ j }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div class="col-span-2">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Uraian Kebutuhan</label>
+            <input v-model="formPerencanaan.uraian" type="text" required placeholder="Contoh: Pengadaan ATK Administrasi" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Komponen Pos</label>
+            <select v-model="formPerencanaan.komponenOperasional" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl font-semibold">
+              <option value="">-- Non-Komponen --</option>
+              <option v-for="k in masterKomponen" :key="k" :value="k">{{ k }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Jumlah</label>
+            <input v-model.number="formPerencanaan.jumlah" type="number" min="1" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Satuan</label>
+            <input v-model="formPerencanaan.satuan" type="text" placeholder="Rim, Pcs, Botol" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Harga Satuan (Rp)</label>
+            <input v-model.number="formPerencanaan.hargaSatuan" type="number" min="0" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+        </div>
+
+        <div class="p-2.5 bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl font-bold flex justify-between items-center">
+          <span class="text-emerald-900 dark:text-emerald-200 uppercase text-[11px]">Estimasi Nilai Total:</span>
+          <span class="text-sm text-emerald-700 dark:text-emerald-400 font-black">Rp {{ formatNumber(formPerencanaan.jumlah * formPerencanaan.hargaSatuan) }}</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Sifat Urgensi</label>
+            <select v-model="formPerencanaan.sifat" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+              <option value="Mendesak">🔴 Mendesak</option>
+              <option value="Penting">🟠 Penting</option>
+              <option value="Prioritas">🟢 Prioritas</option>
+              <option value="Tambahan">🔵 Tambahan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Sumber Dana</label>
+            <select v-model="formPerencanaan.sumberDana" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+              <option value="Dana Operasional Ma'had">Dana Operasional Ma'had</option>
+              <option value="Dana Yayasan">Dana Yayasan</option>
+              <option value="Dana Kegiatan">Dana Kegiatan</option>
+              <option value="Donasi / Wakaf">Donasi / Wakaf</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Alasan Pengajuan</label>
+          <textarea v-model="formPerencanaan.alasan" rows="2" placeholder="Uraikan urgensi untuk dibahas dalam rapat..." class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl"></textarea>
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" @click="showModalPerencanaan = false" class="px-3.5 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl">Batal</button>
+          <button type="submit" class="btn-3d-primary text-white font-bold px-4 py-1.5 rounded-xl">Simpan Usulan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL UBAH STATUS SINGKAT ================= -->
+  <div v-if="modalStatusItem" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-5 card-3d">
+      <div class="flex justify-between items-center pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider">Ubah Status Usulan</h3>
+        <button @click="modalStatusItem = null" class="text-slate-400">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <span class="font-mono font-bold text-emerald-700 dark:text-emerald-400">{{ modalStatusItem.nomor }}</span>
+          <p class="font-bold text-slate-800 dark:text-white truncate mt-0.5">{{ modalStatusItem.uraian }}</p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Pilih Status Baru:</label>
+          <select v-model="formUbahStatus.status" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl font-bold">
+            <option value="Menunggu Rapat">🟡 Menunggu Rapat</option>
+            <option value="Disetujui">🟢 Disetujui</option>
+            <option value="Dalam Proses">🟣 Dalam Proses (Sedang Dibelanjakan)</option>
+            <option value="Ditunda">🟠 Ditunda</option>
+            <option value="Dijadwalkan">🔵 Dijadwalkan</option>
+            <option value="Selesai">🔵 Selesai Realisasi</option>
+            <option value="Dibatalkan">⚫ Dibatalkan</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Catatan / Progres:</label>
+          <textarea v-model="formUbahStatus.catatan" rows="2" placeholder="Contoh: Barang sedang dipesan / dalam pengiriman..." class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl"></textarea>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" @click="modalStatusItem = null" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl">Batal</button>
+          <button type="button" @click="simpanUbahStatus()" class="btn-3d-primary text-white font-bold px-4 py-1.5 rounded-xl">Simpan Status</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL TAMBAH PENGGUNA ================= -->
+  <div v-if="showModalUser" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-5 card-3d">
+      <div class="flex justify-between items-center pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider">Tambah Pengguna Baru</h3>
+        <button @click="showModalUser = false" class="text-slate-400">✕</button>
+      </div>
+
+      <form @submit.prevent="saveUserBaru" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Lengkap</label>
+          <input v-model="formUser.name" type="text" required placeholder="Ustadz / Petugas" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Username</label>
+          <input v-model="formUser.username" type="text" required placeholder="username" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Password</label>
+          <input v-model="formUser.password" type="password" required placeholder="••••••••" class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Hak Akses (Role)</label>
+          <select v-model="formUser.role" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl outline-none">
+            <option value="Pengusul">Pengusul</option>
+            <option value="Bendahara">Bendahara</option>
+            <option value="Pimpinan">Pimpinan</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" @click="showModalUser = false" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl">Batal</button>
+          <button type="submit" class="btn-3d-primary text-white font-bold px-4 py-1.5 rounded-xl">Simpan Akun</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL BUAT AGENDA RAPAT BARU ================= -->
+  <div v-if="showModalRapat" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-5 card-3d max-h-[95vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase tracking-wider">Buat Agenda Rapat Koordinasi Baru</h3>
+        <button @click="showModalRapat = false" class="text-slate-400">✕</button>
+      </div>
+
+      <form @submit.prevent="saveRapatBaru" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Agenda / Nama Rapat</label>
+          <input v-model="formRapat.agenda" type="text" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+        </div>
+        <div class="grid grid-cols-3 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Tanggal</label>
+            <input v-model="formRapat.tanggal" type="date" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Waktu Mulai</label>
+            <input v-model="formRapat.waktuMulai" type="time" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Waktu Selesai</label>
+            <input v-model="formRapat.waktuSelesai" type="time" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Tempat</label>
+            <input v-model="formRapat.tempat" type="text" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Pimpinan Sidang</label>
+            <input v-model="formRapat.pimpinan" type="text" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nama Notulis / Pencatat</label>
+          <input v-model="formRapat.notulis" type="text" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Daftar Hadir / Peserta Sidang</label>
+          <textarea v-model="formRapat.pesertaHadir" rows="2" placeholder="Ustadz Ahmad, Ustadzah Fatimah, Mudir, Bendahara..." class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900"></textarea>
+        </div>
+
+        <div class="p-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-700 dark:text-slate-300 uppercase text-[11px]">Pilih Usulan yang Dibahas:</span>
+            <label class="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 dark:text-emerald-400 cursor-pointer">
+              <input type="checkbox" v-model="formRapat.includePending" @change="toggleIncludePending">
+              <span>Sertakan Usulan Tertunda & Dijadwalkan</span>
+            </label>
+          </div>
+          
+          <div class="max-h-40 overflow-y-auto border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl p-2 space-y-1">
+            <label v-for="item in availableItemsForRapat" :key="item.id" class="flex items-center gap-2 p-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+              <input type="checkbox" :value="item.id" v-model="formRapat.itemIds">
+              <span class="truncate">
+                <b>{{ item.nomor }}</b> - {{ item.uraian }} (Rp {{ formatNumber(item.total) }}) 
+                <span :class="statusBadge(item.status)" class="text-[9px] ml-1">{{ item.status }}</span>
+              </span>
+            </label>
+            <div v-if="availableItemsForRapat.length === 0" class="text-center text-slate-400 py-3 italic">
+              Tidak ada usulan yang siap dimasukkan ke agenda rapat.
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2.5 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" @click="showModalRapat = false" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl">Batal</button>
+          <button type="submit" class="btn-3d-primary text-white font-bold px-4 py-1.5 rounded-xl">Mulai Agenda Sidang</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL PEMBAHASAN & NOTULENSI SIDANG RAPAT ================= -->
+  <div v-if="activeRapat" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full p-5 max-h-[95vh] overflow-y-auto flex flex-col card-3d">
+      <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-200 dark:border-emerald-800">{{ activeRapat.nomor }}</span>
+            <span :class="activeRapat.status === 'Selesai' ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'" class="text-[10px] px-2 py-0.5 rounded-full font-bold">
+              {{ activeRapat.status }}
+            </span>
+          </div>
+          <h3 class="text-sm font-black text-slate-800 dark:text-white mt-1">{{ activeRapat.agenda }}</h3>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Pimpinan: <b>{{ activeRapat.pimpinan }}</b> • Notulis: <b>{{ activeRapat.notulis || '-' }}</b> • Tempat: {{ activeRapat.tempat }}</p>
+        </div>
+        <div class="flex gap-2">
+          <button @click="salinNotulenWA(activeRapat)" class="p-1.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold flex items-center gap-1">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Salin ke WA
+          </button>
+          <button @click="cetakBeritaAcara(activeRapat)" class="p-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Berita Acara
+          </button>
+          <button @click="activeRapat = null" class="text-slate-400 hover:text-slate-600 px-2">✕</button>
+        </div>
+      </div>
+
+      <div class="space-y-3.5 flex-1">
+        <div v-for="itemId in activeRapat.itemIds" :key="itemId" class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2.5">
+          <div v-if="getPerencanaanById(itemId)">
+            <div class="flex flex-wrap justify-between items-start gap-2">
+              <div>
+                <span class="text-[10px] font-mono font-bold bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">{{ getPerencanaanById(itemId).nomor }}</span>
+                <h4 class="font-bold text-xs text-slate-800 dark:text-white mt-1">{{ getPerencanaanById(itemId).uraian }}</h4>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Pengusul: <b>{{ getPerencanaanById(itemId).pengusul }}</b> ({{ getPerencanaanById(itemId).jenjang }})</p>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-slate-500 dark:text-slate-400">Nilai Usulan Asal:</span>
+                <p class="text-sm font-black text-slate-800 dark:text-white">Rp {{ formatNumber(getPerencanaanById(itemId).total) }}</p>
+              </div>
+            </div>
+
+            <div class="pt-2.5 border-t border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center">
+              <div class="sm:col-span-4">
+                <label class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Keputusan:</label>
+                <div class="flex flex-wrap gap-1">
+                  <button type="button" @click="setKeputusanSidang(itemId, 'Disetujui')" :class="getPerencanaanById(itemId).status === 'Disetujui' ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'" class="px-2 py-1 text-[10px] rounded-lg font-bold">✓ Disetujui</button>
+                  <button type="button" @click="setKeputusanSidang(itemId, 'Ditunda')" :class="getPerencanaanById(itemId).status === 'Ditunda' ? 'bg-orange-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'" class="px-2 py-1 text-[10px] rounded-lg font-bold">⏸ Tunda</button>
+                  <button type="button" @click="setKeputusanSidang(itemId, 'Dijadwalkan')" :class="getPerencanaanById(itemId).status === 'Dijadwalkan' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'" class="px-2 py-1 text-[10px] rounded-lg font-bold">📅 Jadwal</button>
+                  <button type="button" @click="setKeputusanSidang(itemId, 'Dibatalkan')" :class="getPerencanaanById(itemId).status === 'Dibatalkan' ? 'bg-slate-700 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'" class="px-2 py-1 text-[10px] rounded-lg font-bold">✕ Batal</button>
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Pagu Disetujui (Rp):</label>
+                <input v-model.number="getPerencanaanById(itemId).nominalDisetujui" @change="syncPerencanaanPagu(getPerencanaanById(itemId))" type="number" min="0" class="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 font-bold text-emerald-800 dark:text-emerald-400" placeholder="Rp">
+              </div>
+
+              <div class="sm:col-span-5">
+                <label class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Catatan Notulensi Khusus:</label>
+                <input v-model="getPerencanaanById(itemId).catatanKeputusan" @change="syncPerencanaan()" type="text" placeholder="Catatan arahan / instruksi mudir..." class="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-3">
+          <h4 class="font-bold text-slate-800 dark:text-white text-xs uppercase flex items-center gap-1.5">
+            <i data-lucide="message-square" class="w-4 h-4 text-emerald-600"></i> Resume Arahan Umum Mudir & Daftar Hadir
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Daftar Peserta Hadir:</label>
+              <textarea v-model="activeRapat.pesertaHadir" @change="saveToLocalStorage" rows="3" placeholder="Nama-nama ustadz dan pengurus yang hadir..." class="w-full px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900"></textarea>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Poin Arahan & Kebijakan Umum Mudir Ma'had:</label>
+              <textarea v-model="activeRapat.kesimpulanUmum" @change="saveToLocalStorage" rows="3" placeholder="Tuliskan arahan umum mudir saat menutup rapat..." class="w-full px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <span class="text-[11px] text-slate-500 dark:text-slate-400">Status sidang: <b>{{ activeRapat.status }}</b></span>
+        <button @click="selesaikanSidangRapat()" class="btn-3d-primary text-white text-xs font-bold px-4 py-2 rounded-xl">
+          {{ activeRapat.status === 'Selesai' ? 'Simpan Perubahan Notulensi' : 'Selesaikan & Tutup Sidang Rapat' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL REALISASI ================= -->
+  <div v-if="activeRealisasi" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-5 card-3d">
+      <div class="flex justify-between items-center pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="font-bold text-slate-800 dark:text-white text-xs uppercase">Realisasi Pembelanjaan</h3>
+        <button @click="activeRealisasi = null" class="text-slate-400">✕</button>
+      </div>
+
+      <form @submit.prevent="saveRealisasi" class="space-y-3 text-xs">
+        <div>
+          <span class="text-slate-500 dark:text-slate-400 font-mono">{{ activeRealisasi.nomor }}</span>
+          <h4 class="font-bold text-slate-800 dark:text-white text-xs">{{ activeRealisasi.uraian }}</h4>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Pagu Disetujui Rapat: <b>Rp {{ formatNumber(activeRealisasi.nominalDisetujui || activeRealisasi.total) }}</b></p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nilai Realisasi Aktual (Rp)</label>
+          <input v-model.number="formRealisasi.nilai" type="number" min="0" required class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl font-bold text-blue-700 dark:text-blue-400">
+        </div>
+
+        <div class="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between font-bold">
+          <span>Efisiensi:</span>
+          <span :class="((activeRealisasi.nominalDisetujui || activeRealisasi.total) - formRealisasi.nilai) >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'">
+            Rp {{ formatNumber((activeRealisasi.nominalDisetujui || activeRealisasi.total) - formRealisasi.nilai) }}
+          </span>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nomor Nota / Bukti</label>
+          <input v-model="formRealisasi.bukti" type="text" placeholder="Contoh: NOTA-09882" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Foto Fisik Kuitansi / Nota</label>
+          <input type="file" @change="handleUploadFotoNota" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+          <div v-if="formRealisasi.fotoNota" class="mt-2 flex items-center gap-2">
+            <img :src="formRealisasi.fotoNota" class="w-12 h-12 object-cover rounded-lg border">
+            <span class="text-[10px] text-emerald-600 font-semibold">Foto siap disimpan</span>
+          </div>
+        </div>
+
+        <div class="pt-2.5 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" @click="activeRealisasi = null" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl">Batal</button>
+          <button type="submit" class="btn-3d-primary text-white font-bold px-4 py-1.5 rounded-xl">Simpan Realisasi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL DETAIL & AUDIT TRAIL ================= -->
+  <div v-if="detailPerencanaan" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 text-xs card-3d">
+      <div class="flex justify-between items-center pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <span class="font-mono font-bold text-emerald-700 dark:text-emerald-400">{{ detailPerencanaan.nomor }}</span>
+          <h3 class="font-bold text-slate-800 dark:text-white text-xs mt-0.5">{{ detailPerencanaan.uraian }}</h3>
+        </div>
+        <button @click="detailPerencanaan = null" class="text-slate-400">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl">
+          <div>Pengusul: <b class="text-slate-800 dark:text-white">{{ detailPerencanaan.pengusul }}</b></div>
+          <div>Jenjang: <b class="text-slate-800 dark:text-white">{{ detailPerencanaan.jenjang }}</b></div>
+          <div>Komponen: <b class="text-slate-800 dark:text-white">{{ detailPerencanaan.komponenOperasional || '-' }}</b></div>
+          <div>Status: <span :class="statusBadge(detailPerencanaan.status)">{{ detailPerencanaan.status }}</span></div>
+          <div>Usulan Awal: <b class="text-slate-800 dark:text-white">Rp {{ formatNumber(detailPerencanaan.total) }}</b></div>
+          <div>Pagu Disetujui: <b class="text-emerald-700 dark:text-emerald-400">{{ detailPerencanaan.nominalDisetujui ? 'Rp ' + formatNumber(detailPerencanaan.nominalDisetujui) : '-' }}</b></div>
+        </div>
+
+        <div>
+          <p class="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+            <i data-lucide="history" class="w-3.5 h-3.5 text-emerald-600"></i> Log Aktivitas & Audit Trail:
+          </p>
+          <div class="max-h-48 overflow-y-auto space-y-2 border border-slate-100 dark:border-slate-800 p-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-800/40">
+            <div v-for="(log, i) in (detailPerencanaan.logs || [])" :key="i" class="text-[11px] border-l-2 border-emerald-500 pl-2 py-0.5">
+              <span class="text-[10px] text-slate-400">{{ log.waktu }} • <b>{{ log.user }}</b>:</span>
+              <p class="text-slate-700 dark:text-slate-300 font-medium">{{ log.aksi }}</p>
+            </div>
+            <div v-if="!detailPerencanaan.logs || detailPerencanaan.logs.length === 0" class="text-[10px] text-slate-400 italic">
+              Pengajuan awal: {{ detailPerencanaan.tanggal }} oleh {{ detailPerencanaan.pengusul }}.
+            </div>
+          </div>
+        </div>
+
+        <div v-if="detailPerencanaan.fotoNota" class="pt-2">
+          <p class="font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Bukti Fisik Kuitansi:</p>
+          <img :src="detailPerencanaan.fotoNota" class="max-h-36 rounded-xl border object-contain cursor-pointer" @click="previewImageSrc = detailPerencanaan.fotoNota">
+        </div>
+      </div>
+
+      <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 text-right">
+        <button @click="detailPerencanaan = null" class="btn-3d-dark text-white px-4 py-1.5 rounded-xl font-bold">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL PRATINJAU FOTO NOTA ================= -->
+  <div v-if="previewImageSrc" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 p-3 rounded-2xl max-w-xl w-full flex flex-col">
+      <div class="flex justify-between items-center pb-2 mb-2 border-b dark:border-slate-800">
+        <h4 class="font-bold text-xs">Pratinjau Kuitansi / Bukti Nota</h4>
+        <button @click="previewImageSrc = null" class="text-slate-400">✕ Tutup</button>
+      </div>
+      <img :src="previewImageSrc" class="max-h-[75vh] w-auto mx-auto object-contain rounded-xl">
+    </div>
+  </div>
+
+  <!-- ================= MODAL CETAK DISPOSISI MANDIRI (A4/A5) ================= -->
+  <div v-if="disposisiItem" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 text-slate-800 card-3d max-h-[95vh] overflow-y-auto">
+      <div class="no-print flex justify-between items-center pb-3 mb-4 border-b">
+        <h3 class="font-bold text-xs uppercase">Cetak Lembar Pengajuan & Disposisi</h3>
+        <div class="flex gap-2">
+          <button @click="printReport()" class="btn-3d-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak Dokumen
+          </button>
+          <button @click="disposisiItem = null" class="border px-3 py-1.5 rounded-xl text-xs font-bold">Tutup</button>
+        </div>
+      </div>
+
+      <div class="border-b-2 border-slate-900 pb-3 mb-4 text-center">
+        <h2 class="text-xs font-black uppercase text-slate-600">{{ profilLembaga.yayasan }}</h2>
+        <h1 class="text-base font-black uppercase text-slate-900">{{ profilLembaga.nama }}</h1>
+        <p class="text-[10px] text-slate-500">{{ profilLembaga.alamat }} • Telp: {{ profilLembaga.kontak }}</p>
+        <p class="text-xs font-extrabold uppercase tracking-widest mt-2 border-t border-slate-200 pt-1 text-emerald-800">
+          FORMULIR USULAN PERENCANAAN PEMBELANJAAN
+        </p>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <table class="w-full border border-slate-300 text-left">
+          <tbody>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold w-36">Kode Usulan</td>
+              <td class="p-2 border font-mono font-bold">{{ disposisiItem.nomor }}</td>
+              <td class="p-2 border bg-slate-50 font-bold w-24">Tanggal</td>
+              <td class="p-2 border">{{ disposisiItem.tanggal }}</td>
+            </tr>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold">Pengusul</td>
+              <td class="p-2 border font-bold">{{ disposisiItem.pengusul }}</td>
+              <td class="p-2 border bg-slate-50 font-bold">Jenjang</td>
+              <td class="p-2 border">{{ disposisiItem.jenjang }}</td>
+            </tr>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold">Uraian Kebutuhan</td>
+              <td colspan="3" class="p-2 border font-medium">{{ disposisiItem.uraian }}</td>
+            </tr>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold">Komponen / Pos</td>
+              <td colspan="3" class="p-2 border font-bold text-emerald-700">{{ disposisiItem.komponenOperasional || '-' }}</td>
+            </tr>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold">Volume / Satuan</td>
+              <td class="p-2 border">{{ disposisiItem.jumlah }} {{ disposisiItem.satuan }}</td>
+              <td class="p-2 border bg-slate-50 font-bold">Harga Satuan</td>
+              <td class="p-2 border">Rp {{ formatNumber(disposisiItem.hargaSatuan) }}</td>
+            </tr>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold">Total Nilai</td>
+              <td colspan="3" class="p-2 border font-black text-emerald-700 text-sm">Rp {{ formatNumber(disposisiItem.total) }}</td>
+            </tr>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold">Urgensi & Sumber Dana</td>
+              <td colspan="3" class="p-2 border">Sifat: <b>{{ disposisiItem.sifat }}</b> | Sumber Dana: <b>{{ disposisiItem.sumberDana }}</b></td>
+            </tr>
+            <tr>
+              <td class="p-2 border bg-slate-50 font-bold">Alasan Pengajuan</td>
+              <td colspan="3" class="p-2 border italic">{{ disposisiItem.alasan || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="border border-slate-300 p-3 rounded-xl">
+          <p class="font-bold text-[11px] uppercase border-b border-slate-200 pb-1 mb-2">Catatan Disposisi Mudir / Pimpinan:</p>
+          <div class="h-16 border-b border-dashed border-slate-300"></div>
+          <div class="pt-2 flex justify-between text-[11px]">
+            <span>Keputusan: [ &nbsp; ] Disetujui &nbsp;&nbsp; [ &nbsp; ] Ditunda &nbsp;&nbsp; [ &nbsp; ] Ditolak</span>
+            <span>Tanggal: _______________</span>
+          </div>
+        </div>
+
+        <div class="pt-6 grid grid-cols-2 text-center text-xs">
+          <div>
+            <p>Pemohon / Pengusul,</p>
+            <div class="h-14"></div>
+            <p class="font-bold underline">{{ disposisiItem.pengusul }}</p>
+          </div>
+          <div>
+            <p>Menyetujui, Mudir Ma'had</p>
+            <div class="h-14"></div>
+            <p class="font-bold underline">Mudir Ma'had Imam Syafi'i</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL KWITANSI / BUKTI KAS KELUAR (BKK) ================= -->
+  <div v-if="bkkItem" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 text-slate-800 card-3d max-h-[95vh] overflow-y-auto">
+      <div class="no-print flex justify-between items-center pb-3 mb-4 border-b">
+        <h3 class="font-bold text-xs uppercase flex items-center gap-2">
+          <i data-lucide="receipt-text" class="w-4 h-4 text-emerald-600"></i> Bukti Kas Keluar (BKK) / Kwitansi Pengeluaran
+        </h3>
+        <div class="flex gap-2">
+          <button @click="printReport()" class="btn-3d-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak BKK
+          </button>
+          <button @click="bkkItem = null" class="border px-3 py-1.5 rounded-xl text-xs font-bold">Tutup</button>
+        </div>
+      </div>
+
+      <!-- KOP BKK -->
+      <div class="border-2 border-slate-900 p-5 rounded-2xl bg-white space-y-4 text-xs">
+        <div class="flex justify-between items-start border-b-2 border-slate-900 pb-3">
+          <div class="flex items-center gap-3">
+            <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-12 h-12 object-contain shrink-0">
+            <div>
+              <h2 class="font-extrabold uppercase text-[11px] text-slate-700">{{ profilLembaga.yayasan }}</h2>
+              <h1 class="font-black text-sm uppercase text-slate-900">{{ profilLembaga.nama }}</h1>
+              <p class="text-[9px] text-slate-500">{{ profilLembaga.alamat }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 bg-slate-900 text-white font-extrabold text-[11px] rounded tracking-wider uppercase">
+              BUKTI KAS KELUAR
+            </span>
+            <p class="font-mono text-[11px] font-bold mt-1 text-slate-800">NO. BKK-{{ bkkItem.nomor }}</p>
+          </div>
+        </div>
+
+        <table class="w-full text-left space-y-2">
+          <tbody>
+            <tr class="align-top">
+              <td class="w-32 py-1 font-bold text-slate-700">Dibayarkan Kepada</td>
+              <td class="w-4 py-1">:</td>
+              <td class="py-1 font-bold text-slate-900">{{ bkkItem.pengusul }} ({{ bkkItem.jenjang }})</td>
+            </tr>
+            <tr class="align-top">
+              <td class="py-1 font-bold text-slate-700">Uang Sejumlah</td>
+              <td class="py-1">:</td>
+              <td class="py-1 italic font-bold bg-emerald-50 text-emerald-900 p-2 rounded-lg border border-emerald-200 capitalize">
+                "{{ terbilang(bkkItem.realisasiNilai || bkkItem.nominalDisetujui || bkkItem.total) }} Rupiah"
+              </td>
+            </tr>
+            <tr class="align-top">
+              <td class="py-1 font-bold text-slate-700">Untuk Pembayaran</td>
+              <td class="py-1">:</td>
+              <td class="py-1 font-medium text-slate-800">{{ bkkItem.uraian }}</td>
+            </tr>
+            <tr class="align-top">
+              <td class="py-1 font-bold text-slate-700">Nomor Nota / Bukti</td>
+              <td class="py-1">:</td>
+              <td class="py-1 font-mono font-bold">{{ bkkItem.buktiNota || '-' }}</td>
+            </tr>
+            <tr class="align-top">
+              <td class="py-1 font-bold text-slate-700">Sumber Anggaran</td>
+              <td class="py-1">:</td>
+              <td class="py-1">{{ bkkItem.sumberDana }} <span v-if="bkkItem.komponenOperasional">• Pos {{ bkkItem.komponenOperasional }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="pt-2 flex justify-between items-center border-t border-slate-200">
+          <div class="p-2.5 bg-slate-100 rounded-xl border border-slate-300">
+            <span class="text-[10px] text-slate-500 uppercase font-bold block">Jumlah Realisasi:</span>
+            <span class="text-base font-black text-slate-900">Rp {{ formatNumber(bkkItem.realisasiNilai || bkkItem.nominalDisetujui || bkkItem.total) }}</span>
+          </div>
+          <div class="text-right text-[11px] text-slate-500">
+            Serang, {{ formatTanggalIndo(bkkItem.tanggal) }}
+          </div>
+        </div>
+
+        <div class="pt-4 grid grid-cols-3 text-center text-xs">
+          <div>
+            <p>Mengetahui,</p>
+            <p class="font-bold mt-0.5">Mudir Ma'had</p>
+            <div class="h-14"></div>
+            <p class="font-bold underline">Mudir Ma'had Imam Syafi'i</p>
+          </div>
+          <div>
+            <p>Lunas Dibayar,</p>
+            <p class="font-bold mt-0.5">Bendahara</p>
+            <div class="h-14"></div>
+            <p class="font-bold underline">{{ profilBendahara.nama }}</p>
+          </div>
+          <div>
+            <p>Penerima Dana,</p>
+            <p class="font-bold mt-0.5">Pengusul / Pelaksana</p>
+            <div class="h-14"></div>
+            <p class="font-bold underline">{{ bkkItem.pengusul }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL BERITA ACARA RAPAT ================= -->
+  <div v-if="cetakRapatData" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-4xl w-full p-8 text-slate-800 card-3d max-h-[95vh] overflow-y-auto print:p-0 print:border-none print:shadow-none">
+      
+      <!-- Action Toolbar -->
+      <div class="no-print flex flex-wrap justify-between items-center gap-2 pb-3 mb-5 border-b">
+        <div>
+          <h3 class="font-bold text-xs uppercase">Berita Acara Rapat Koordinasi</h3>
+          <p class="text-[10px] text-slate-400">Pilih tabulasi rekapitulasi, bubuhkan tanda tangan digital, atau ekspor</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button @click="downloadBeritaAcaraJPG()" :disabled="isExporting" class="btn-3d-dark text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow disabled:opacity-50">
+            <i data-lucide="image" class="w-3.5 h-3.5 text-teal-400"></i>
+            <span>{{ isExporting ? 'Memproses...' : 'Download JPG' }}</span>
+          </button>
+          
+          <button @click="downloadBeritaAcaraPDF()" :disabled="isExporting" class="btn-3d-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow disabled:opacity-50">
+            <i data-lucide="file-down" class="w-3.5 h-3.5 text-amber-300"></i>
+            <span>{{ isExporting ? 'Menyusun PDF...' : 'Download PDF' }}</span>
+          </button>
+
+          <button @click="printReport()" class="border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak Browser
+          </button>
+
+          <button @click="cetakRapatData = null" class="border px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Tutup</button>
+        </div>
+      </div>
+
+      <!-- TAB VIEW KHUSUS MATRIKS USULAN VS REKAP DIVISI/JENJANG -->
+      <div class="no-print mb-4 flex gap-2 border-b border-slate-200 pb-2 text-xs font-bold">
+        <button @click="modeViewRapat = 'lengkap'" :class="modeViewRapat === 'lengkap' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-3 py-1.5 rounded-xl transition">
+          Daftar Usulan Lengkap
+        </button>
+        <button @click="modeViewRapat = 'rekapJenjang'" :class="modeViewRapat === 'rekapJenjang' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'" class="px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+          <i data-lucide="table-2" class="w-3.5 h-3.5"></i> Rekapitulasi per Divisi/Jenjang
+        </button>
+      </div>
+
+      <!-- AREA TARGET EKSPOR PDF & JPG -->
+      <div id="lembar-berita-acara" class="bg-white p-6 rounded-2xl border border-slate-100">
+        
+        <!-- KOP BERITA ACARA -->
+        <div class="flex items-center gap-4 pb-4 mb-4 border-b-2 border-slate-900">
+          <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-16 h-16 object-contain shrink-0">
+          <div class="flex-1 text-center">
+            <h2 class="text-sm font-black text-slate-700 uppercase tracking-wider">{{ profilLembaga.yayasan }}</h2>
+            <h1 class="text-xl font-black text-slate-900 uppercase tracking-tight">{{ profilLembaga.nama }}</h1>
+            <p class="text-[11px] text-slate-600 mt-0.5">{{ profilLembaga.alamat }} • Telp: {{ profilLembaga.kontak }}</p>
+            <p class="text-xs font-black text-emerald-800 uppercase tracking-widest mt-2 border-t border-slate-300 pt-1">
+              BERITA ACARA & NOTULENSI RAPAT KOORDINASI ANGGARAN
+            </p>
+          </div>
+        </div>
+
+        <!-- METADATA SIDANG -->
+        <div class="mb-4 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <div class="grid grid-cols-2 gap-y-1.5">
+            <div>Nomor Berita Acara: <b class="font-mono">{{ cetakRapatData.nomor }}</b></div>
+            <div>Hari / Tanggal: <b>{{ formatTanggalIndo(cetakRapatData.tanggal) }}</b></div>
+            <div>Agenda Sidang: <b>{{ cetakRapatData.agenda }}</b></div>
+            <div>Waktu Sidang: <b>{{ cetakRapatData.waktuMulai || '08:00' }} s/d {{ cetakRapatData.waktuSelesai || 'Selesai' }} WIB</b></div>
+            <div>Tempat: <b>{{ cetakRapatData.tempat }}</b></div>
+            <div>Pimpinan Sidang: <b>{{ cetakRapatData.pimpinan }}</b></div>
+            <div>Notulis Sidang: <b>{{ cetakRapatData.notulis || '-' }}</b></div>
+            <div>Status Rapat: <b>{{ cetakRapatData.status }}</b></div>
+          </div>
+          <div class="mt-2.5 pt-2 border-t border-slate-200">
+            <span class="font-bold">Peserta Hadir:</span>
+            <p class="text-slate-700 mt-0.5 leading-relaxed">{{ cetakRapatData.pesertaHadir || 'Pimpinan Ma\'had, Bendahara, Ustadz & Pengusul terkait.' }}</p>
+          </div>
+        </div>
+
+        <!-- TABEL REKAPITULASI PER DIVISI / JENJANG -->
+        <div v-if="modeViewRapat === 'rekapJenjang'" class="mb-4">
+          <h4 class="font-bold text-xs uppercase mb-2 text-emerald-800 flex items-center gap-1.5">
+            <i data-lucide="layers" class="w-3.5 h-3.5"></i> Ringkasan Rekapitulasi Putusan per Divisi / Jenjang:
+          </h4>
+          <table class="w-full text-left text-xs border border-slate-300 mb-2">
+            <thead class="bg-slate-100 text-slate-800 font-bold uppercase text-[10px]">
+              <tr>
+                <th class="p-2 border border-slate-300 text-center">No</th>
+                <th class="p-2 border border-slate-300">Jenjang / Divisi</th>
+                <th class="p-2 border border-slate-300 text-center">Total Usulan</th>
+                <th class="p-2 border border-slate-300 text-right">Nilai Diajukan (Rp)</th>
+                <th class="p-2 border border-slate-300 text-right">Pagu Disetujui (Rp)</th>
+                <th class="p-2 border border-slate-300">Rincian Keputusan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(rekap, idx) in rekapRapatPerJenjang" :key="rekap.jenjang">
+                <td class="p-2 border border-slate-300 text-center">{{ idx + 1 }}</td>
+                <td class="p-2 border border-slate-300 font-bold text-slate-900">{{ rekap.jenjang }}</td>
+                <td class="p-2 border border-slate-300 text-center">{{ rekap.jumlah }} Item</td>
+                <td class="p-2 border border-slate-300 text-right">Rp {{ formatNumber(rekap.totalUsulan) }}</td>
+                <td class="p-2 border border-slate-300 text-right font-bold text-emerald-800">Rp {{ formatNumber(rekap.totalDisetujui) }}</td>
+                <td class="p-2 border border-slate-300 text-[10px]">
+                  <span class="text-emerald-700 font-semibold">{{ rekap.disetujui }} Disetujui</span>, 
+                  <span class="text-orange-600 font-semibold">{{ rekap.ditunda }} Ditunda</span>, 
+                  <span class="text-slate-500 font-semibold">{{ rekap.lainnya }} Lainnya</span>
+                </td>
+              </tr>
+              <tr class="bg-slate-50 font-bold">
+                <td colspan="2" class="p-2 border border-slate-300 text-center">TOTAL KESELURUHAN</td>
+                <td class="p-2 border border-slate-300 text-center">{{ cetakRapatData.itemIds.length }} Item</td>
+                <td class="p-2 border border-slate-300 text-right">Rp {{ formatNumber(rekapRapatTotalKeseluruhan.totalUsulan) }}</td>
+                <td class="p-2 border border-slate-300 text-right text-emerald-800">Rp {{ formatNumber(rekapRapatTotalKeseluruhan.totalDisetujui) }}</td>
+                <td class="p-2 border border-slate-300 text-center">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TABEL MATRIKS USULAN LENGKAP -->
+        <div v-else class="mb-4">
+          <h4 class="font-bold text-xs uppercase mb-2">Matriks Keputusan Pembahasan Usulan:</h4>
+          <table class="w-full text-left text-xs border border-slate-300">
+            <thead class="bg-slate-100 text-slate-800 font-bold uppercase text-[10px]">
+              <tr>
+                <th class="p-2 border border-slate-300 text-center">No</th>
+                <th class="p-2 border border-slate-300">Kode</th>
+                <th class="p-2 border border-slate-300">Pengusul & Jenjang</th>
+                <th class="p-2 border border-slate-300">Uraian Kebutuhan</th>
+                <th class="p-2 border border-slate-300 text-right">Usulan (Rp)</th>
+                <th class="p-2 border border-slate-300 text-right">Pagu Disetujui (Rp)</th>
+                <th class="p-2 border border-slate-300 text-center">Keputusan</th>
+                <th class="p-2 border border-slate-300">Notulensi / Arahan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(id, idx) in cetakRapatData.itemIds" :key="id">
+                <td class="p-2 border border-slate-300 text-center">{{ idx + 1 }}</td>
+                <td class="p-2 border border-slate-300 font-mono font-bold">{{ getPerencanaanById(id)?.nomor }}</td>
+                <td class="p-2 border border-slate-300">
+                  <div class="font-bold">{{ getPerencanaanById(id)?.pengusul }}</div>
+                  <div class="text-[10px] text-slate-500">{{ getPerencanaanById(id)?.jenjang }}</div>
+                </td>
+                <td class="p-2 border border-slate-300">{{ getPerencanaanById(id)?.uraian }}</td>
+                <td class="p-2 border border-slate-300 text-right font-semibold">{{ formatNumber(getPerencanaanById(id)?.total) }}</td>
+                <td class="p-2 border border-slate-300 text-right font-bold text-emerald-800">
+                  {{ getPerencanaanById(id)?.nominalDisetujui ? formatNumber(getPerencanaanById(id)?.nominalDisetujui) : '-' }}
+                </td>
+                <td class="p-2 border border-slate-300 text-center font-bold">
+                  {{ getPerencanaanById(id)?.status }}
+                </td>
+                <td class="p-2 border border-slate-300 italic text-[11px]">{{ getPerencanaanById(id)?.catatanKeputusan || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- KESIMPULAN UMUM MUDIR -->
+        <div class="mb-6 p-3.5 border border-slate-200 rounded-xl bg-slate-50 text-xs">
+          <p class="font-bold uppercase mb-1">Resume Kesepakatan & Arahan Mudir Ma'had:</p>
+          <p class="text-slate-800 leading-relaxed">{{ cetakRapatData.kesimpulanUmum || 'Seluruh pos usulan yang disetujui agar direalisasikan sesuai pagu yang ditetapkan dengan mengutamakan efisiensi dan menyertakan bukti kuitansi nota sah.' }}</p>
+        </div>
+
+        <!-- DIGITAL SIGNATURE CANVAS & PENGESAHAN ELEKTRONIK -->
+        <div class="pt-4 grid grid-cols-2 text-center text-xs gap-6">
+          <div>
+            <p>Notulis Sidang Rapat,</p>
+            <div class="my-2 flex flex-col items-center">
+              <canvas id="sigNotulisCanvas" width="220" height="90" class="sig-canvas no-print shadow-sm"></canvas>
+              <img v-if="sigNotulisData" :src="sigNotulisData" class="h-20 object-contain mx-auto print-only" alt="Tanda Tangan Notulis">
+              <div v-else class="h-20 print-only"></div>
+              <button type="button" @click="resetSigCanvas('notulis')" class="no-print mt-1 text-[10px] text-slate-400 hover:text-rose-600 font-bold">
+                Reset Tanda Tangan
+              </button>
+            </div>
+            <p class="font-bold underline">{{ cetakRapatData.notulis || currentUser.name }}</p>
+            <p class="text-[10px] text-slate-500">Sekretariat Sidang</p>
+          </div>
+
+          <div>
+            <p>Pimpinan Sidang Koordinasi,</p>
+            <div class="my-2 flex flex-col items-center">
+              <canvas id="sigMudirCanvas" width="220" height="90" class="sig-canvas no-print shadow-sm"></canvas>
+              <img v-if="sigMudirData" :src="sigMudirData" class="h-20 object-contain mx-auto print-only" alt="Tanda Tangan Mudir">
+              <div v-else class="h-20 print-only"></div>
+              <button type="button" @click="resetSigCanvas('mudir')" class="no-print mt-1 text-[10px] text-slate-400 hover:text-rose-600 font-bold">
+                Reset Tanda Tangan
+              </button>
+            </div>
+            <p class="font-bold underline">{{ cetakRapatData.pimpinan }}</p>
+            <p class="text-[10px] text-slate-500">Mudir Ma'had Imam Syafi'i</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= LOGIKA APLIKASI VUE.JS ================= -->
+<script>
+const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
+
+createApp({
+  setup() {
+    const masterJenjang = [
+      'MHTQ/TK', 'SDIT/SD', 'MMTQ Putra', 'MMTQ Putri', 
+      'MTTQ/SMA', 'Kesantrian', 'Administrasi', 'Sarana Prasarana', 'Umum'
+    ];
+
+    const masterKomponen = ['Dana taktis', 'kebersihan', 'ATK', 'konsumsi rapat'];
+
+    // State Tema Gelap / Dark Mode
+    const isDarkMode = ref(false);
+
+    // Profil Lembaga & Bendahara
+    const profilLembaga = ref({
+      namaApp: 'SIPERBEL MIAS',
+      nama: 'Ma\'had Imam Syafi\'i',
+      yayasan: 'Yayasan Mutiara Ilmu & Amal',
+      alamat: 'Jl. Raya Cilegon Km. 08, Kramatwatu, Serang, Banten',
+      tahunAnggaran: '2026/2027',
+      kontak: '0812-3456-7890',
+      tagline: 'Merencanakan • Membahas • Memutuskan • Merealisasikan • Melaporkan',
+      logo: ''
+    });
+
+    const profilBendahara = ref({
+      nama: 'Dadi Slamet Riyadi',
+      nip: 'BND-2026-001',
+      telepon: '0812-8899-7766',
+      email: 'bendahara@mias.sch.id',
+      jabatan: 'Bendahara Lembaga',
+      foto: ''
+    });
+
+    // Pagu Komponen & Jenjang
+    const paguKomponen = ref({
+      'Dana taktis': 5000000,
+      'kebersihan': 3500000,
+      'ATK': 4000000,
+      'konsumsi rapat': 2500000
+    });
+
+    const paguJenjang = ref({
+      'MHTQ/TK': 10000000,
+      'SDIT/SD': 15000000,
+      'MMTQ Putra': 25000000,
+      'MMTQ Putri': 25000000,
+      'MTTQ/SMA': 20000000,
+      'Kesantrian': 15000000,
+      'Administrasi': 12000000,
+      'Sarana Prasarana': 35000000,
+      'Umum': 8000000
+    });
+
+    // Akun Pengguna
+    const users = ref([
+      { username: 'admin', password: 'admin123', name: 'Dadi Slamet Riyadi', role: 'Admin' },
+      { username: 'bendahara', password: 'bendahara123', name: 'Bendahara MIAS', role: 'Bendahara' },
+      { username: 'pimpinan', password: 'pimpinan123', name: 'Pimpinan Ma\'had', role: 'Pimpinan' },
+      { username: 'pengusul', password: 'pengusul123', name: 'Ustadz Pengusul', role: 'Pengusul' }
+    ]);
+
+    // currentUser diset null di awal agar setiap membuka browser harus login
+    const currentUser = ref(null);
+    const loginForm = ref({ username: '', password: '' });
+    const loginError = ref('');
+    const showWelcomeToast = ref(false);
+
+    // State Sandi & Modal User
+    const formPassword = ref({ lama: '', baru: '', konfirmasi: '' });
+    const passwordNotice = ref({ text: '', isError: false });
+    const showModalUser = ref(false);
+    const formUser = ref({ name: '', username: '', password: '', role: 'Pengusul' });
+
+    // Navigasi & Tampilan
+    const currentTab = ref('dashboard');
+    const jenisLaporan = ref('perencanaan');
+    const filterLaporan = ref({ startDate: '', endDate: '', jenjang: '', periodeHijriyah: '' });
+
+    // Data Utama
+    const perencanaans = ref([]);
+    const rapats = ref([]);
+
+    // Modals
+    const showModalPerencanaan = ref(false);
+    const formPerencanaan = ref({});
+    const showModalRapat = ref(false);
+    const formRapat = ref({
+      agenda: '',
+      tanggal: '',
+      waktuMulai: '08:30',
+      waktuSelesai: '11:30',
+      tempat: 'Ruang Rapat Utama MIAS',
+      pimpinan: 'Mudir Ma\'had',
+      notulis: '',
+      pesertaHadir: '',
+      includePending: true,
+      itemIds: []
+    });
+    
+    const activeRapat = ref(null);
+    const activeRealisasi = ref(null);
+    const formRealisasi = ref({ nilai: 0, bukti: '', fotoNota: '' });
+    const detailPerencanaan = ref(null);
+    const filterPerencanaan = ref({ search: '', jenjang: '', status: '', sifat: '', periodeHijriyah: '' });
+    const modalStatusItem = ref(null);
+    const formUbahStatus = ref({ status: '', catatan: '' });
+    const previewImageSrc = ref(null);
+    const disposisiItem = ref(null);
+    const bkkItem = ref(null);
+    const cetakRapatData = ref(null);
+    const isExporting = ref(false);
+    const modeViewRapat = ref('lengkap');
+
+    // Canvas Tanda Tangan Digital
+    const sigNotulisData = ref('');
+    const sigMudirData = ref('');
+
+    const refreshIcons = () => {
+      nextTick(() => {
+        if (window.lucide) lucide.createIcons();
+      });
+    };
+
+    // FUNGSI TOGGLE DAN PENERAPAN MODE GELAP LANGSUNG KE ROOT HTML
+    const applyDarkMode = (val) => {
+      isDarkMode.value = val;
+      if (val) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('siperbel_darkmode', JSON.stringify(val));
+    };
+
+    const toggleDarkMode = () => {
+      applyDarkMode(!isDarkMode.value);
+      refreshIcons();
+    };
+
+    // FUNGSI VOICE SAMBUTAN ISLAMI (CHIME + WEB SPEECH)
+    const playWelcomeVoice = () => {
+      showWelcomeToast.value = true;
+      setTimeout(() => { showWelcomeToast.value = false; }, 7000);
+
+      // 1. Web Audio Melodic Chime Synthesizer
+      try {
+        const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtxClass) {
+          const audioCtx = new AudioCtxClass();
+          if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+          
+          const now = audioCtx.currentTime;
+          
+          // Nada Chime 1 (E5)
+          const osc1 = audioCtx.createOscillator();
+          const gain1 = audioCtx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(659.25, now);
+          gain1.gain.setValueAtTime(0.15, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc1.connect(gain1);
+          gain1.connect(audioCtx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.35);
+
+          // Nada Chime 2 (G#5)
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(830.61, now + 0.12);
+          gain2.gain.setValueAtTime(0.2, now + 0.12);
+          gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.start(now + 0.12);
+          osc2.stop(now + 0.55);
+
+          // Nada Chime 3 (B5)
+          const osc3 = audioCtx.createOscillator();
+          const gain3 = audioCtx.createGain();
+          osc3.type = 'sine';
+          osc3.frequency.setValueAtTime(987.77, now + 0.25);
+          gain3.gain.setValueAtTime(0.25, now + 0.25);
+          gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+          osc3.connect(gain3);
+          gain3.connect(audioCtx.destination);
+          osc3.start(now + 0.25);
+          osc3.stop(now + 0.8);
+        }
+      } catch (e) {
+        console.warn('Web Audio warning:', e);
+      }
+
+      // 2. Web Speech Synthesis Voice Bahasa Indonesia
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const pesan = "Assalamu'alaikum. Ahlan wa sahlan di Sistem Informasi Pengajuan Perbelanjaan Ma'had Imam Syafi'i.";
+        const utterance = new SpeechSynthesisUtterance(pesan);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.92;
+        utterance.pitch = 1.05;
+
+        const voices = window.speechSynthesis.getVoices();
+        const idVoice = voices.find(v => v.lang && (v.lang.includes('id') || v.lang.includes('ID')));
+        if (idVoice) utterance.voice = idVoice;
+
+        setTimeout(() => {
+          window.speechSynthesis.speak(utterance);
+        }, 350);
+      }
+    };
+
+    // Algoritma Terbilang Rupiah
+    const terbilang = (angka) => {
+      const bilangan = [
+        '', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan',
+        'sepuluh', 'sebelas'
+      ];
+      angka = Math.floor(Math.abs(Number(angka) || 0));
+      if (angka < 12) return bilangan[angka];
+      if (angka < 20) return terbilang(angka - 10) + ' belas';
+      if (angka < 100) return terbilang(Math.floor(angka / 10)) + ' puluh ' + terbilang(angka % 10);
+      if (angka < 200) return 'seratus ' + terbilang(angka - 100);
+      if (angka < 1000) return terbilang(Math.floor(angka / 100)) + ' ratus ' + terbilang(angka % 100);
+      if (angka < 2000) return 'seribu ' + terbilang(angka - 1000);
+      if (angka < 1000000) return terbilang(Math.floor(angka / 1000)) + ' ribu ' + terbilang(angka % 1000);
+      if (angka < 1000000000) return terbilang(Math.floor(angka / 1000000)) + ' juta ' + terbilang(angka % 1000000);
+      if (angka < 1000000000000) return terbilang(Math.floor(angka / 1000000000)) + ' milyar ' + terbilang(angka % 1000000000);
+      return '';
+    };
+
+    const logAktivitas = (item, aksiText) => {
+      if (!item.logs) item.logs = [];
+      const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+      item.logs.unshift({
+        waktu,
+        user: currentUser.value ? `${currentUser.value.name} (${currentUser.value.role})` : 'Sistem',
+        aksi: aksiText
+      });
+    };
+
+    const initData = () => {
+      // Inisialisasi tema gelap
+      const savedDark = localStorage.getItem('siperbel_darkmode');
+      if (savedDark !== null) {
+        applyDarkMode(JSON.parse(savedDark));
+      } else {
+        applyDarkMode(false);
+      }
+
+      const savedLembaga = localStorage.getItem('siperbel_profil_lembaga');
+      if (savedLembaga) profilLembaga.value = { ...profilLembaga.value, ...JSON.parse(savedLembaga) };
+
+      const savedBendahara = localStorage.getItem('siperbel_profil_bendahara');
+      if (savedBendahara) profilBendahara.value = { ...profilBendahara.value, ...JSON.parse(savedBendahara) };
+
+      const savedPaguKomp = localStorage.getItem('siperbel_pagu_komponen');
+      if (savedPaguKomp) paguKomponen.value = { ...paguKomponen.value, ...JSON.parse(savedPaguKomp) };
+
+      const savedPagu = localStorage.getItem('siperbel_pagu_jenjang');
+      if (savedPagu) paguJenjang.value = { ...paguJenjang.value, ...JSON.parse(savedPagu) };
+
+      const savedUsers = localStorage.getItem('siperbel_users');
+      if (savedUsers) {
+        users.value = JSON.parse(savedUsers);
+      } else {
+        localStorage.setItem('siperbel_users', JSON.stringify(users.value));
+      }
+
+      // Catatan: Tidak memuat auto-login session agar awal masuk selalu menampilkan halaman login
+      currentUser.value = null;
+
+      const savedPerencanaan = localStorage.getItem('siperbel_perencanaan');
+      if (savedPerencanaan) {
+        perencanaans.value = JSON.parse(savedPerencanaan);
+      } else {
+        perencanaans.value = [
+          { id: 1, nomor: 'PB-26001', tanggal: '2026-09-19', pengusul: 'Ustadz Ahmad', jenjang: 'MMTQ Putra', komponenOperasional: 'ATK', uraian: 'Pengadaan Tinta Printer Epson', jumlah: 2, satuan: 'Botol', hargaSatuan: 150000, total: 300000, nominalDisetujui: 300000, sifat: 'Penting', sumberDana: 'Dana Operasional Ma\'had', alasan: 'Pencetakan absensi santri', status: 'Disetujui', realisasiNilai: 285000, buktiNota: 'NOTA-001/EPSON', logs: [{ waktu: '19/09/2026 08:30', user: 'Ustadz Ahmad', aksi: 'Mengajukan usulan perencanaan' }] },
+          { id: 2, nomor: 'PB-26002', tanggal: '2026-09-19', pengusul: 'Bagian Sarpras', jenjang: 'Administrasi', komponenOperasional: 'Dana taktis', uraian: 'Perbaikan Mesin AC Kantor', jumlah: 1, satuan: 'Unit', hargaSatuan: 750000, total: 750000, nominalDisetujui: 750000, sifat: 'Mendesak', sumberDana: 'Dana Operasional Ma\'had', alasan: 'Ruangan kantor terlalu panas', status: 'Menunggu Rapat', logs: [{ waktu: '19/09/2026 09:00', user: 'Bagian Sarpras', aksi: 'Mengajukan usulan perencanaan' }] },
+          { id: 3, nomor: 'PB-26003', tanggal: '2026-09-18', pengusul: 'Ustadzah Fatimah', jenjang: 'MMTQ Putri', komponenOperasional: '', uraian: 'Kitab Santriwati Tahfidz', jumlah: 50, satuan: 'Eks', hargaSatuan: 35000, total: 1750000, nominalDisetujui: 0, sifat: 'Prioritas', sumberDana: 'Dana Yayasan', alasan: 'Kebutuhan awal kuartal', status: 'Ditunda', catatanKeputusan: 'Ditunda ke kuartal berikutnya menunggu pencairan dana yayasan', logs: [{ waktu: '18/09/2026 14:00', user: 'Ustadzah Fatimah', aksi: 'Mengajukan usulan perencanaan' }] }
+        ];
+        saveToLocalStorage();
+      }
+
+      const savedRapat = localStorage.getItem('siperbel_rapat');
+      if (savedRapat) {
+        rapats.value = JSON.parse(savedRapat);
+      } else {
+        rapats.value = [
+          { id: 1, nomor: 'RKT-26001', agenda: 'Rapat Koordinasi Anggaran September 2026', tanggal: '2026-09-19', waktuMulai: '08:30', waktuSelesai: '11:00', tempat: 'Kantor Ma\'had', pimpinan: 'Mudir Ma\'had', notulis: 'Dadi Slamet Riyadi', pesertaHadir: 'Mudir, Bendahara, Ustadz Ahmad, Sarpras', kesimpulanUmum: 'Prioritaskan pengadaan tinta dan servis sarana penting.', status: 'Berjalan', itemIds: [1, 2] }
+        ];
+        saveToLocalStorage();
+      }
+    };
+
+    const saveToLocalStorage = () => {
+      localStorage.setItem('siperbel_perencanaan', JSON.stringify(perencanaans.value));
+      localStorage.setItem('siperbel_rapat', JSON.stringify(rapats.value));
+      refreshIcons();
+    };
+
+    // Login dan memicu Voice Sambutan
+    const handleLogin = () => {
+      loginError.value = '';
+      const found = users.value.find(u => u.username === loginForm.value.username && u.password === loginForm.value.password);
+      if (found) {
+        currentUser.value = { name: found.name, role: found.role, username: found.username };
+        playWelcomeVoice();
+        refreshIcons();
+      } else {
+        loginError.value = 'Username atau kata sandi tidak valid.';
+      }
+    };
+
+    const handleLogout = () => {
+      currentUser.value = null;
+      loginForm.value = { username: '', password: '' };
+      refreshIcons();
+    };
+
+    const handleGantiPassword = () => {
+      passwordNotice.value = { text: '', isError: false };
+      const idx = users.value.findIndex(u => u.username === currentUser.value.username);
+      if (idx === -1) return;
+
+      if (users.value[idx].password !== formPassword.value.lama) {
+        passwordNotice.value = { text: 'Kata sandi saat ini salah.', isError: true };
+        return;
+      }
+      if (formPassword.value.baru !== formPassword.value.konfirmasi) {
+        passwordNotice.value = { text: 'Konfirmasi kata sandi baru tidak cocok.', isError: true };
+        return;
+      }
+
+      users.value[idx].password = formPassword.value.baru;
+      localStorage.setItem('siperbel_users', JSON.stringify(users.value));
+      passwordNotice.value = { text: 'Kata sandi Anda berhasil diperbarui!', isError: false };
+      formPassword.value = { lama: '', baru: '', konfirmasi: '' };
+    };
+
+    const openModalAddUser = () => {
+      formUser.value = { name: '', username: '', password: '', role: 'Pengusul' };
+      showModalUser.value = true;
+    };
+
+    const saveUserBaru = () => {
+      if (users.value.some(u => u.username.toLowerCase() === formUser.value.username.toLowerCase())) {
+        alert('Username sudah terdaftar! Gunakan username lain.');
+        return;
+      }
+      users.value.push({ ...formUser.value });
+      localStorage.setItem('siperbel_users', JSON.stringify(users.value));
+      showModalUser.value = false;
+      alert('Pengguna baru berhasil ditambahkan!');
+      refreshIcons();
+    };
+
+    const hapusUser = (idx) => {
+      if (confirm(`Hapus akun ${users.value[idx].username}?`)) {
+        users.value.splice(idx, 1);
+        localStorage.setItem('siperbel_users', JSON.stringify(users.value));
+        refreshIcons();
+      }
+    };
+
+    const uploadLogoLembaga = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => { profilLembaga.value.logo = evt.target.result; };
+      reader.readAsDataURL(file);
+    };
+
+    const uploadFotoBendahara = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => { profilBendahara.value.foto = evt.target.result; };
+      reader.readAsDataURL(file);
+    };
+
+    const handleUploadFotoNota = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => { formRealisasi.value.fotoNota = evt.target.result; };
+      reader.readAsDataURL(file);
+    };
+
+    const simpanProfilSemua = () => {
+      localStorage.setItem('siperbel_profil_lembaga', JSON.stringify(profilLembaga.value));
+      localStorage.setItem('siperbel_profil_bendahara', JSON.stringify(profilBendahara.value));
+      localStorage.setItem('siperbel_pagu_jenjang', JSON.stringify(paguJenjang.value));
+      localStorage.setItem('siperbel_pagu_komponen', JSON.stringify(paguKomponen.value));
+      alert('Identitas lembaga, profil bendahara, dan pagu berhasil disimpan!');
+    };
+
+    // Hak Akses
+    const canCreatePerencanaan = computed(() => ['Admin', 'Bendahara', 'Pengusul'].includes(currentUser.value?.role));
+    const canAccessRapat = computed(() => ['Admin', 'Pimpinan', 'Bendahara'].includes(currentUser.value?.role));
+    const canAccessRealisasi = computed(() => ['Admin', 'Bendahara'].includes(currentUser.value?.role));
+
+    const canEditItem = (item) => {
+      if (currentUser.value?.role === 'Admin') return true;
+      if (currentUser.value?.role === 'Bendahara') return true;
+      if (currentUser.value?.role === 'Pengusul' && item.status === 'Menunggu Rapat') return true;
+      return false;
+    };
+
+    const canDeleteItem = (item) => {
+      if (currentUser.value?.role === 'Admin') return true;
+      if (currentUser.value?.role === 'Bendahara' && item.status === 'Menunggu Rapat') return true;
+      return false;
+    };
+
+    const headerTitle = computed(() => {
+      switch (currentTab.value) {
+        case 'dashboard': return 'Ringkasan Eksekutif';
+        case 'perencanaan': return 'Perencanaan & Usulan Pembelanjaan';
+        case 'rapat': return 'Sidang Rapat Koordinasi & Notulensi';
+        case 'realisasi': return 'Eksekusi & Pembuktian Realisasi';
+        case 'laporan': return 'Laporan Resmi & Rekapitulasi';
+        case 'profil': return 'Identitas Lembaga & Plafond Pagu';
+        case 'users': return 'Kelola Akun Pengguna';
+        case 'keamanan': return 'Keamanan Akun & Sandi';
+        case 'setting': return 'Pencadangan Basis Data';
+        default: return currentTab.value;
+      }
+    });
+
+    const stats = computed(() => {
+      const all = perencanaans.value;
+      const totalNilai = all.reduce((acc, cur) => acc + (cur.total || 0), 0);
+      const disetujuiItems = all.filter(p => p.status === 'Disetujui' || p.status === 'Selesai' || p.status === 'Dalam Proses');
+      const nilaiDisetujui = disetujuiItems.reduce((acc, cur) => acc + (cur.nominalDisetujui || cur.total || 0), 0);
+      const selesaiItems = all.filter(p => p.status === 'Selesai');
+      const nilaiRealisasi = selesaiItems.reduce((acc, cur) => acc + (cur.realisasiNilai || 0), 0);
+      const selisihHemat = selesaiItems.reduce((acc, cur) => acc + ((cur.nominalDisetujui || cur.total || 0) - (cur.realisasiNilai || 0)), 0);
+      const menungguItems = all.filter(p => p.status === 'Menunggu Rapat');
+
+      const totalPaguAlokasi = Object.values(paguJenjang.value).reduce((sum, val) => sum + (Number(val) || 0), 0);
+      const sisaSaldoKas = totalPaguAlokasi - nilaiRealisasi;
+
+      return {
+        totalCount: all.length,
+        totalNilai,
+        totalPaguAlokasi,
+        sisaSaldoKas,
+        menunggu: menungguItems.length,
+        nilaiMenunggu: menungguItems.reduce((acc, cur) => acc + (cur.total || 0), 0),
+        disetujui: all.filter(p => p.status === 'Disetujui').length,
+        nilaiDisetujui,
+        ditunda: all.filter(p => p.status === 'Ditunda').length,
+        dijadwalkan: all.filter(p => p.status === 'Dijadwalkan').length,
+        dalamProses: all.filter(p => p.status === 'Dalam Proses').length,
+        selesai: selesaiItems.length,
+        dibatalkan: all.filter(p => p.status === 'Dibatalkan').length,
+        nilaiRealisasi,
+        selisihHemat
+      };
+    });
+
+    const getKomponenTotal = (komponen) => {
+      return perencanaans.value
+        .filter(p => p.komponenOperasional === komponen && ['Disetujui', 'Dalam Proses', 'Selesai'].includes(p.status))
+        .reduce((sum, cur) => sum + (cur.realisasiNilai || cur.nominalDisetujui || cur.total || 0), 0);
+    };
+
+    const getKomponenPersen = (komponen) => {
+      const pagu = paguKomponen.value[komponen] || 0;
+      if (pagu <= 0) return 0;
+      return Math.round((getKomponenTotal(komponen) / pagu) * 100);
+    };
+
+    const getJenjangTotal = (jenjang) => {
+      return perencanaans.value
+        .filter(p => p.jenjang === jenjang && ['Disetujui', 'Dalam Proses', 'Selesai'].includes(p.status))
+        .reduce((sum, cur) => sum + (cur.realisasiNilai || cur.nominalDisetujui || cur.total || 0), 0);
+    };
+
+    const getJenjangPersen = (jenjang) => {
+      const pagu = paguJenjang.value[jenjang] || 0;
+      if (pagu <= 0) return 0;
+      return Math.round((getJenjangTotal(jenjang) / pagu) * 100);
+    };
+
+    const matchPeriodeTanggal = (itemTanggal, periodeKey) => {
+      if (!periodeKey) return true;
+      if (!itemTanggal) return false;
+      const month = new Date(itemTanggal).getMonth() + 1;
+      if (periodeKey === 'sem_ganjil') return month >= 7 && month <= 12;
+      if (periodeKey === 'sem_genap') return month >= 1 && month <= 6;
+      if (periodeKey === 'ramadhan') return month >= 2 && month <= 4;
+      if (periodeKey === 'ajaran_baru') return month >= 6 && month <= 8;
+      return true;
+    };
+
+    const filteredPerencanaans = computed(() => {
+      return perencanaans.value.filter(item => {
+        const matchSearch = !filterPerencanaan.value.search || 
+          item.nomor.toLowerCase().includes(filterPerencanaan.value.search.toLowerCase()) ||
+          item.uraian.toLowerCase().includes(filterPerencanaan.value.search.toLowerCase()) ||
+          item.pengusul.toLowerCase().includes(filterPerencanaan.value.search.toLowerCase());
+        const matchJenjang = !filterPerencanaan.value.jenjang || item.jenjang === filterPerencanaan.value.jenjang;
+        const matchStatus = !filterPerencanaan.value.status || item.status === filterPerencanaan.value.status;
+        const matchSifat = !filterPerencanaan.value.sifat || item.sifat === filterPerencanaan.value.sifat;
+        const matchPeriode = matchPeriodeTanggal(item.tanggal, filterPerencanaan.value.periodeHijriyah);
+        return matchSearch && matchJenjang && matchStatus && matchSifat && matchPeriode;
+      });
+    });
+
+    const listRealisasi = computed(() => perencanaans.value.filter(p => ['Disetujui', 'Dalam Proses', 'Selesai'].includes(p.status)));
+
+    const listLaporanData = computed(() => {
+      return perencanaans.value.filter(item => {
+        const matchJenjang = !filterLaporan.value.jenjang || item.jenjang === filterLaporan.value.jenjang;
+        const matchStart = !filterLaporan.value.startDate || item.tanggal >= filterLaporan.value.startDate;
+        const matchEnd = !filterLaporan.value.endDate || item.tanggal <= filterLaporan.value.endDate;
+        const matchPeriode = matchPeriodeTanggal(item.tanggal, filterLaporan.value.periodeHijriyah);
+        return matchJenjang && matchStart && matchEnd && matchPeriode;
+      });
+    });
+
+    const laporanTotals = computed(() => {
+      const data = listLaporanData.value;
+      const totalRencana = data.reduce((acc, c) => acc + (c.total || 0), 0);
+      const totalAktual = data.reduce((acc, c) => acc + (c.realisasiNilai || 0), 0);
+      const totalHemat = data.reduce((acc, c) => acc + ((c.nominalDisetujui || c.total || 0) - (c.realisasiNilai || 0)), 0);
+      return { totalRencana, totalAktual, totalHemat };
+    });
+
+    const rekapRapatPerJenjang = computed(() => {
+      if (!cetakRapatData.value || !cetakRapatData.value.itemIds) return [];
+      const items = cetakRapatData.value.itemIds.map(id => getPerencanaanById(id)).filter(Boolean);
+      const map = {};
+
+      items.forEach(it => {
+        if (!map[it.jenjang]) {
+          map[it.jenjang] = {
+            jenjang: it.jenjang,
+            jumlah: 0,
+            totalUsulan: 0,
+            totalDisetujui: 0,
+            disetujui: 0,
+            ditunda: 0,
+            lainnya: 0
+          };
+        }
+        map[it.jenjang].jumlah += 1;
+        map[it.jenjang].totalUsulan += (it.total || 0);
+        map[it.jenjang].totalDisetujui += (it.nominalDisetujui || 0);
+        if (it.status === 'Disetujui') map[it.jenjang].disetujui += 1;
+        else if (it.status === 'Ditunda') map[it.jenjang].ditunda += 1;
+        else map[it.jenjang].lainnya += 1;
+      });
+
+      return Object.values(map);
+    });
+
+    const rekapRapatTotalKeseluruhan = computed(() => {
+      const data = rekapRapatPerJenjang.value;
+      const totalUsulan = data.reduce((acc, c) => acc + c.totalUsulan, 0);
+      const totalDisetujui = data.reduce((acc, c) => acc + c.totalDisetujui, 0);
+      return { totalUsulan, totalDisetujui };
+    });
+
+    const formatNumber = (val) => (!val && val !== 0 ? '0' : Number(val).toLocaleString('id-ID'));
+    const formatTanggalIndo = (str) => {
+      if (!str) return '-';
+      const d = new Date(str);
+      return d.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
+    const navClass = (tab) => {
+      const base = 'w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ';
+      return currentTab.value === tab 
+        ? base + 'btn-3d-primary text-white shadow'
+        : base + 'text-slate-400 hover:bg-slate-800/80 hover:text-white';
+    };
+
+    const sifatBadge = (sifat) => {
+      const b = 'px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ';
+      if (sifat === 'Mendesak') return b + 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
+      if (sifat === 'Penting') return b + 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
+      if (sifat === 'Prioritas') return b + 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+      return b + 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
+    };
+
+    const statusBadge = (status) => {
+      const b = 'px-2 py-0.5 rounded-full text-[10px] font-bold ';
+      if (status === 'Disetujui') return b + 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300';
+      if (status === 'Menunggu Rapat') return b + 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300';
+      if (status === 'Ditunda') return b + 'bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-300';
+      if (status === 'Dijadwalkan') return b + 'bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300';
+      if (status === 'Dalam Proses') return b + 'bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300';
+      if (status === 'Selesai') return b + 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300';
+      return b + 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+    };
+
+    // Aksi CRUD Usulan
+    const openModalPerencanaan = () => {
+      const newKode = 'PB-2600' + (perencanaans.value.length + 1);
+      formPerencanaan.value = {
+        nomor: newKode,
+        tanggal: new Date().toISOString().split('T')[0],
+        pengusul: currentUser.value.name,
+        jenjang: 'MMTQ Putra',
+        komponenOperasional: '',
+        uraian: '',
+        jumlah: 1,
+        satuan: 'Pcs',
+        hargaSatuan: 0,
+        sifat: 'Penting',
+        sumberDana: 'Dana Operasional Ma\'had',
+        alasan: ''
+      };
+      showModalPerencanaan.value = true;
+      refreshIcons();
+    };
+
+    const editPerencanaan = (item) => {
+      formPerencanaan.value = { ...item };
+      showModalPerencanaan.value = true;
+      refreshIcons();
+    };
+
+    const savePerencanaan = () => {
+      const total = formPerencanaan.value.jumlah * formPerencanaan.value.hargaSatuan;
+      if (formPerencanaan.value.id) {
+        const index = perencanaans.value.findIndex(p => p.id === formPerencanaan.value.id);
+        if (index !== -1) {
+          const item = { ...formPerencanaan.value, total };
+          logAktivitas(item, `Mengubah data rincian usulan belanja`);
+          perencanaans.value[index] = item;
+        }
+      } else {
+        const newItem = {
+          ...formPerencanaan.value,
+          id: Date.now(),
+          total,
+          nominalDisetujui: 0,
+          status: 'Menunggu Rapat',
+          logs: []
+        };
+        logAktivitas(newItem, `Mengajukan usulan perencanaan belanja`);
+        perencanaans.value.unshift(newItem);
+      }
+      showModalPerencanaan.value = false;
+      saveToLocalStorage();
+    };
+
+    const deletePerencanaan = (id) => {
+      if (confirm('Yakin ingin menghapus data usulan ini secara permanen?')) {
+        perencanaans.value = perencanaans.value.filter(p => p.id !== id);
+        saveToLocalStorage();
+      }
+    };
+
+    const openModalUbahStatus = (item) => {
+      modalStatusItem.value = item;
+      formUbahStatus.value = {
+        status: item.status,
+        catatan: item.catatanKeputusan || ''
+      };
+    };
+
+    const simpanUbahStatus = () => {
+      if (modalStatusItem.value) {
+        const lama = modalStatusItem.value.status;
+        modalStatusItem.value.status = formUbahStatus.value.status;
+        modalStatusItem.value.catatanKeputusan = formUbahStatus.value.catatan;
+        logAktivitas(modalStatusItem.value, `Status diubah: '${lama}' -> '${formUbahStatus.value.status}' (Catatan: ${formUbahStatus.value.catatan || '-'})`);
+        saveToLocalStorage();
+        modalStatusItem.value = null;
+      }
+    };
+
+    const viewDetailPerencanaan = (item) => {
+      detailPerencanaan.value = item;
+      refreshIcons();
+    };
+
+    const bukaDisposisi = (item) => {
+      disposisiItem.value = item;
+      refreshIcons();
+    };
+
+    const bukaKwitansiBKK = (item) => {
+      bkkItem.value = item;
+      refreshIcons();
+    };
+
+    const availableItemsForRapat = computed(() => {
+      return perencanaans.value.filter(p => {
+        if (p.status === 'Menunggu Rapat') return true;
+        if (formRapat.value.includePending && (p.status === 'Ditunda' || p.status === 'Dijadwalkan')) return true;
+        return false;
+      });
+    });
+
+    const toggleIncludePending = () => {
+      formRapat.value.itemIds = availableItemsForRapat.value.map(p => p.id);
+    };
+
+    const openModalRapat = () => {
+      const newKode = 'RKT-2600' + (rapats.value.length + 1);
+      formRapat.value = {
+        nomor: newKode,
+        agenda: `Rapat Koordinasi Anggaran Periode ${new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`,
+        tanggal: new Date().toISOString().split('T')[0],
+        waktuMulai: '08:30',
+        waktuSelesai: '11:30',
+        tempat: 'Ruang Rapat Utama MIAS',
+        pimpinan: 'Mudir Ma\'had',
+        notulis: currentUser.value.name,
+        pesertaHadir: 'Mudir, Bendahara, Tim Asatidzah',
+        includePending: true,
+        itemIds: []
+      };
+      formRapat.value.itemIds = availableItemsForRapat.value.map(p => p.id);
+      showModalRapat.value = true;
+    };
+
+    const saveRapatBaru = () => {
+      const newRapat = {
+        ...formRapat.value,
+        id: Date.now(),
+        kesimpulanUmum: '',
+        status: 'Berjalan'
+      };
+      rapats.value.unshift(newRapat);
+      showModalRapat.value = false;
+      saveToLocalStorage();
+    };
+
+    const bukaSidangRapat = (rapat) => {
+      activeRapat.value = rapat;
+      refreshIcons();
+    };
+
+    const getPerencanaanById = (id) => perencanaans.value.find(p => p.id === id);
+
+    const setKeputusanSidang = (itemId, status) => {
+      const item = getPerencanaanById(itemId);
+      if (item) {
+        item.status = status;
+        if (status === 'Disetujui' && (!item.nominalDisetujui || item.nominalDisetujui === 0)) {
+          item.nominalDisetujui = item.total;
+        }
+        logAktivitas(item, `Sidang Rapat menetapkan status: ${status} (Pagu: Rp ${formatNumber(item.nominalDisetujui || item.total)})`);
+        saveToLocalStorage();
+      }
+    };
+
+    const syncPerencanaanPagu = (item) => {
+      logAktivitas(item, `Pagu disetujui disesuaikan menjadi Rp ${formatNumber(item.nominalDisetujui)}`);
+      saveToLocalStorage();
+    };
+
+    const syncPerencanaan = () => saveToLocalStorage();
+
+    const selesaikanSidangRapat = () => {
+      if (activeRapat.value) {
+        activeRapat.value.status = 'Selesai';
+        saveToLocalStorage();
+        alert('Notulensi dan keputusan sidang rapat berhasil disimpan!');
+        activeRapat.value = null;
+      }
+    };
+
+    const initSignatureCanvas = () => {
+      nextTick(() => {
+        ['sigNotulisCanvas', 'sigMudirCanvas'].forEach(canvasId => {
+          const canvas = document.getElementById(canvasId);
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          let isDrawing = false;
+
+          ctx.lineWidth = 2.5;
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = '#0f172a';
+
+          const getPos = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+          };
+
+          const startDraw = (e) => {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            if (e.cancelable) e.preventDefault();
+          };
+
+          const draw = (e) => {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            if (e.cancelable) e.preventDefault();
+          };
+
+          const stopDraw = () => {
+            if (isDrawing) {
+              isDrawing = false;
+              if (canvasId === 'sigNotulisCanvas') sigNotulisData.value = canvas.toDataURL('image/png');
+              if (canvasId === 'sigMudirCanvas') sigMudirData.value = canvas.toDataURL('image/png');
+            }
+          };
+
+          canvas.onmousedown = startDraw;
+          canvas.onmousemove = draw;
+          canvas.onmouseup = stopDraw;
+          canvas.onmouseleave = stopDraw;
+
+          canvas.ontouchstart = startDraw;
+          canvas.ontouchmove = draw;
+          canvas.ontouchend = stopDraw;
+        });
+      });
+    };
+
+    const resetSigCanvas = (type) => {
+      const canvasId = type === 'notulis' ? 'sigNotulisCanvas' : 'sigMudirCanvas';
+      const canvas = document.getElementById(canvasId);
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (type === 'notulis') sigNotulisData.value = '';
+        if (type === 'mudir') sigMudirData.value = '';
+      }
+    };
+
+    const cetakBeritaAcara = (rapat) => {
+      cetakRapatData.value = rapat;
+      modeViewRapat.value = 'lengkap';
+      sigNotulisData.value = '';
+      sigMudirData.value = '';
+      initSignatureCanvas();
+      refreshIcons();
+    };
+
+    const downloadBeritaAcaraJPG = async () => {
+      const element = document.getElementById('lembar-berita-acara');
+      if (!element) return;
+      isExporting.value = true;
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const link = document.createElement('a');
+        link.download = `Berita_Acara_${cetakRapatData.value.nomor}.jpg`;
+        link.href = imgData;
+        link.click();
+      } catch (err) {
+        alert('Gagal membuat berkas JPG.');
+      } finally {
+        isExporting.value = false;
+      }
+    };
+
+    const downloadBeritaAcaraPDF = async () => {
+      const element = document.getElementById('lembar-berita-acara');
+      if (!element) return;
+      isExporting.value = true;
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`Berita_Acara_${cetakRapatData.value.nomor}.pdf`);
+      } catch (err) {
+        alert('Gagal menyusun berkas PDF.');
+      } finally {
+        isExporting.value = false;
+      }
+    };
+
+    const salinNotulenWA = (rapat) => {
+      let text = `*BERITA ACARA & NOTULENSI RAPAT KOORDINASI MIAS*\n`;
+      text += `Nomor: ${rapat.nomor}\n`;
+      text += `Agenda: ${rapat.agenda}\n`;
+      text += `Hari/Tanggal: ${formatTanggalIndo(rapat.tanggal)}\n`;
+      text += `Waktu: ${rapat.waktuMulai || '08:00'} - ${rapat.waktuSelesai || 'Selesai'} WIB\n`;
+      text += `Pimpinan Sidang: ${rapat.pimpinan}\n`;
+      text += `Notulis: ${rapat.notulis || '-'}\n`;
+      text += `Peserta: ${rapat.pesertaHadir || '-'}\n\n`;
+      text += `*HASIL KEPUTUSAN PEMBAHASAN USULAN:*\n`;
+
+      rapat.itemIds.forEach((id, index) => {
+        const item = getPerencanaanById(id);
+        if (item) {
+          text += `${index + 1}. [${item.nomor}] ${item.uraian} (${item.jenjang})\n`;
+          text += `   • Nilai Pengajuan: Rp ${formatNumber(item.total)}\n`;
+          text += `   • Keputusan: *${item.status.toUpperCase()}*\n`;
+          if (item.status === 'Disetujui') {
+            text += `   • Pagu Disetujui: *Rp ${formatNumber(item.nominalDisetujui || item.total)}*\n`;
+          }
+          if (item.catatanKeputusan) {
+            text += `   • Notulensi: _${item.catatanKeputusan}_\n`;
+          }
+        }
+      });
+
+      if (rapat.kesimpulanUmum) {
+        text += `\n*ARAHAN & KESIMPULAN UMUM MUDIR:*\n${rapat.kesimpulanUmum}\n`;
+      }
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Resume notulensi rapat berhasil disalin ke clipboard! Siap ditempelkan ke WhatsApp.');
+      }).catch(() => {
+        alert('Gagal menyalin ke clipboard.');
+      });
+    };
+
+    const openModalRealisasi = (item) => {
+      activeRealisasi.value = item;
+      formRealisasi.value = {
+        nilai: item.realisasiNilai || item.nominalDisetujui || item.total,
+        bukti: item.buktiNota || '',
+        fotoNota: item.fotoNota || ''
+      };
+    };
+
+    const saveRealisasi = () => {
+      if (activeRealisasi.value) {
+        activeRealisasi.value.realisasiNilai = formRealisasi.value.nilai;
+        activeRealisasi.value.buktiNota = formRealisasi.value.bukti;
+        activeRealisasi.value.fotoNota = formRealisasi.value.fotoNota;
+        activeRealisasi.value.status = 'Selesai';
+        logAktivitas(activeRealisasi.value, `Realisasi belanja selesai: Rp ${formatNumber(formRealisasi.value.nilai)} (Bukti: ${formRealisasi.value.bukti})`);
+        saveToLocalStorage();
+        activeRealisasi.value = null;
+      }
+    };
+
+    const printReport = () => window.print();
+
+    // Ekspor Tabel Aktif
+    const exportToExcel = () => {
+      const dataExport = listLaporanData.value.map((p, idx) => ({
+        'No': idx + 1,
+        'Nomor Usulan': p.nomor,
+        'Tanggal': p.tanggal,
+        'Pengusul': p.pengusul,
+        'Jenjang': p.jenjang,
+        'Komponen': p.komponenOperasional || '-',
+        'Uraian': p.uraian,
+        'Total Rencana (Rp)': p.total,
+        'Pagu Disetujui (Rp)': p.nominalDisetujui || p.total,
+        'Realisasi (Rp)': p.realisasiNilai || 0,
+        'Selisih (Rp)': (p.nominalDisetujui || p.total) - (p.realisasiNilai || 0),
+        'Sifat': p.sifat,
+        'Status': p.status,
+        'Bukti Nota': p.buktiNota || '-'
+      }));
+      const ws = XLSX.utils.json_to_sheet(dataExport);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Laporan_Aktif");
+      XLSX.writeFile(wb, `SIPERBEL_MIAS_Laporan_${new Date().toISOString().split('T')[0]}.xlsx`);
+    };
+
+    // EKSPOR MULTI-SHEET COMPREHENSIVE SPREADSHEET (SEMUA TAB)
+    const exportMultiSheetExcel = () => {
+      const wb = XLSX.utils.book_new();
+
+      // Sheet 1: Perencanaan Usulan Lengkap
+      const dataPerencanaan = perencanaans.value.map((p, idx) => ({
+        'No': idx + 1,
+        'Kode Usulan': p.nomor,
+        'Tanggal Pengajuan': p.tanggal,
+        'Nama Pengusul': p.pengusul,
+        'Jenjang / Divisi': p.jenjang,
+        'Komponen Pos': p.komponenOperasional || '-',
+        'Uraian Kebutuhan': p.uraian,
+        'Jumlah Volume': p.jumlah,
+        'Satuan': p.satuan,
+        'Harga Satuan (Rp)': p.hargaSatuan,
+        'Total Pengajuan (Rp)': p.total,
+        'Pagu Disetujui (Rp)': p.nominalDisetujui || 0,
+        'Sifat Urgensi': p.sifat,
+        'Sumber Dana': p.sumberDana,
+        'Status Dokumen': p.status,
+        'Alasan Pengajuan': p.alasan || '-'
+      }));
+      const wsPerencanaan = XLSX.utils.json_to_sheet(dataPerencanaan);
+      XLSX.utils.book_append_sheet(wb, wsPerencanaan, "Perencanaan_Usulan");
+
+      // Sheet 2: Riwayat Sidang Rapat Koordinasi
+      const dataRapat = rapats.value.map((r, idx) => ({
+        'No': idx + 1,
+        'Nomor Berita Acara': r.nomor,
+        'Agenda Rapat': r.agenda,
+        'Tanggal Sidang': r.tanggal,
+        'Waktu': `${r.waktuMulai || '08:00'} s/d ${r.waktuSelesai || 'Selesai'} WIB`,
+        'Tempat': r.tempat,
+        'Pimpinan Sidang': r.pimpinan,
+        'Notulis Sidang': r.notulis || '-',
+        'Daftar Peserta': r.pesertaHadir || '-',
+        'Jumlah Usulan Dibahas': r.itemIds ? r.itemIds.length : 0,
+        'Status Sidang': r.status,
+        'Arahan & Kesimpulan Mudir': r.kesimpulanUmum || '-'
+      }));
+      const wsRapat = XLSX.utils.json_to_sheet(dataRapat);
+      XLSX.utils.book_append_sheet(wb, wsRapat, "Rapat_Koordinasi");
+
+      // Sheet 3: Realisasi Pembelanjaan Disetujui
+      const dataRealisasi = perencanaans.value
+        .filter(p => ['Disetujui', 'Dalam Proses', 'Selesai'].includes(p.status))
+        .map((p, idx) => ({
+          'No': idx + 1,
+          'Kode Usulan': p.nomor,
+          'Pengusul & Jenjang': `${p.pengusul} (${p.jenjang})`,
+          'Uraian Belanja': p.uraian,
+          'Pagu Rapat Disetujui (Rp)': p.nominalDisetujui || p.total,
+          'Nilai Realisasi Aktual (Rp)': p.realisasiNilai || 0,
+          'Selisih Efisiensi (Rp)': (p.nominalDisetujui || p.total) - (p.realisasiNilai || 0),
+          'Nomor Nota / Kwitansi': p.buktiNota || '-',
+          'Foto Kuitansi Fisik': p.fotoNota ? 'Tersedia' : 'Tidak Ada',
+          'Status': p.status
+        }));
+      const wsRealisasi = XLSX.utils.json_to_sheet(dataRealisasi);
+      XLSX.utils.book_append_sheet(wb, wsRealisasi, "Realisasi_Belanja");
+
+      // Sheet 4: Pagu dan Serapan Anggaran
+      const dataPaguKomponen = masterKomponen.map((komp, idx) => ({
+        'No': idx + 1,
+        'Kategori': 'Komponen Operasional',
+        'Nama Pos / Jenjang': komp,
+        'Pagu Alokasi (Rp)': paguKomponen.value[komp] || 0,
+        'Realisasi / Terpakai (Rp)': getKomponenTotal(komp),
+        'Persentase Serapan': `${getKomponenPersen(komp)}%`,
+        'Sisa Anggaran (Rp)': (paguKomponen.value[komp] || 0) - getKomponenTotal(komp)
+      }));
+
+      const dataPaguJenjang = masterJenjang.map((j, idx) => ({
+        'No': masterKomponen.length + idx + 1,
+        'Kategori': 'Divisi / Jenjang Pendidikan',
+        'Nama Pos / Jenjang': j,
+        'Pagu Alokasi (Rp)': paguJenjang.value[j] || 0,
+        'Realisasi / Terpakai (Rp)': getJenjangTotal(j),
+        'Persentase Serapan': `${getJenjangPersen(j)}%`,
+        'Sisa Anggaran (Rp)': (paguJenjang.value[j] || 0) - getJenjangTotal(j)
+      }));
+
+      const wsPagu = XLSX.utils.json_to_sheet([...dataPaguKomponen, ...dataPaguJenjang]);
+      XLSX.utils.book_append_sheet(wb, wsPagu, "Pagu_dan_Serapan");
+
+      // Unduh Berkas Multi-Sheet
+      XLSX.writeFile(wb, `SIPERBEL_MIAS_DATABASE_LENGKAP_${new Date().toISOString().split('T')[0]}.xlsx`);
+    };
+
+    const backupDataJSON = () => {
+      const data = {
+        profilLembaga: profilLembaga.value,
+        profilBendahara: profilBendahara.value,
+        paguKomponen: paguKomponen.value,
+        paguJenjang: paguJenjang.value,
+        users: users.value,
+        perencanaans: perencanaans.value,
+        rapats: rapats.value,
+        backupDate: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup_siperbel_mias_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    const restoreDataJSON = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (parsed.perencanaans) perencanaans.value = parsed.perencanaans;
+          if (parsed.rapats) rapats.value = parsed.rapats;
+          if (parsed.profilLembaga) profilLembaga.value = parsed.profilLembaga;
+          if (parsed.profilBendahara) profilBendahara.value = parsed.profilBendahara;
+          if (parsed.paguKomponen) paguKomponen.value = parsed.paguKomponen;
+          if (parsed.paguJenjang) paguJenjang.value = parsed.paguJenjang;
+          if (parsed.users) users.value = parsed.users;
+          
+          saveToLocalStorage();
+          localStorage.setItem('siperbel_profil_lembaga', JSON.stringify(profilLembaga.value));
+          localStorage.setItem('siperbel_profil_bendahara', JSON.stringify(profilBendahara.value));
+          localStorage.setItem('siperbel_pagu_komponen', JSON.stringify(paguKomponen.value));
+          localStorage.setItem('siperbel_pagu_jenjang', JSON.stringify(paguJenjang.value));
+          localStorage.setItem('siperbel_users', JSON.stringify(users.value));
+          
+          alert('Basis data, pagu komponen, notulensi rapat, dan profil berhasil dipulihkan!');
+        } catch (err) {
+          alert('Gagal memproses berkas backup JSON.');
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    watch([currentTab, filteredPerencanaans, isDarkMode], () => {
+      refreshIcons();
+    });
+
+    onMounted(() => {
+      initData();
+      refreshIcons();
+    });
+
+    return {
+      masterJenjang, masterKomponen, isDarkMode, toggleDarkMode,
+      profilLembaga, profilBendahara, paguKomponen, paguJenjang,
+      users, currentUser, loginForm, loginError, showWelcomeToast, formPassword, passwordNotice, showModalUser, formUser,
+      currentTab, jenisLaporan, filterLaporan, perencanaans, rapats, stats,
+      getKomponenTotal, getKomponenPersen, getJenjangTotal, getJenjangPersen,
+      filteredPerencanaans, listRealisasi, listLaporanData, laporanTotals, filterPerencanaan,
+      showModalPerencanaan, formPerencanaan, showModalRapat, formRapat, availableItemsForRapat, toggleIncludePending,
+      activeRapat, activeRealisasi, formRealisasi, detailPerencanaan, previewImageSrc, disposisiItem, bkkItem,
+      cetakRapatData, isExporting, modeViewRapat, rekapRapatPerJenjang, rekapRapatTotalKeseluruhan,
+      sigNotulisData, sigMudirData, resetSigCanvas,
+      modalStatusItem, formUbahStatus,
+      canCreatePerencanaan, canAccessRapat, canAccessRealisasi, canEditItem, canDeleteItem, headerTitle,
+      handleLogin, handleLogout, handleGantiPassword, openModalAddUser, saveUserBaru, hapusUser,
+      uploadLogoLembaga, uploadFotoBendahara, handleUploadFotoNota, simpanProfilSemua,
+      formatNumber, formatTanggalIndo, terbilang, navClass, sifatBadge, statusBadge,
+      openModalPerencanaan, editPerencanaan, savePerencanaan, deletePerencanaan, viewDetailPerencanaan, bukaDisposisi, bukaKwitansiBKK,
+      openModalUbahStatus, simpanUbahStatus,
+      openModalRapat, saveRapatBaru, bukaSidangRapat, getPerencanaanById, setKeputusanSidang, syncPerencanaanPagu, syncPerencanaan, selesaikanSidangRapat,
+      cetakBeritaAcara, downloadBeritaAcaraJPG, downloadBeritaAcaraPDF, salinNotulenWA,
+      openModalRealisasi, saveRealisasi, printReport, exportToExcel, exportMultiSheetExcel, backupDataJSON, restoreDataJSON
+    };
+  }
+}).mount('#app');
+</script>
+
+</body>
+</html>
