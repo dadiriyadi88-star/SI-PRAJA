@@ -133,8 +133,11 @@
 
     <div class="max-w-md w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-8 border border-white/50 dark:border-slate-800 shadow-2xl relative z-10">
       <div class="text-center mb-6">
-        <div class="inline-flex p-3.5 bg-gradient-to-tr from-emerald-500 to-teal-400 text-white rounded-2xl mb-3 shadow-lg shadow-emerald-500/30">
-          <i data-lucide="boxes" class="w-8 h-8"></i>
+        <div class="mb-3 flex justify-center">
+          <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-16 h-16 object-contain rounded-2xl shadow-lg bg-white p-1.5 border border-slate-200 dark:border-slate-700">
+          <div v-else class="inline-flex p-3.5 bg-gradient-to-tr from-emerald-500 to-teal-400 text-white rounded-2xl shadow-lg shadow-emerald-500/30">
+            <i data-lucide="boxes" class="w-8 h-8"></i>
+          </div>
         </div>
         <h1 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight flex items-center justify-center gap-2">
           <span>SI-PRAJA</span>
@@ -192,8 +195,11 @@
     <aside class="no-print w-full md:w-64 bg-slate-900 text-slate-200 flex flex-col shrink-0 border-r border-slate-800 shadow-2xl z-20">
       <!-- Header Sidebar -->
       <div class="p-4 border-b border-slate-800 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
-          <i data-lucide="boxes" class="w-5 h-5"></i>
+        <div class="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 flex items-center justify-center shrink-0 border border-slate-700/80 p-1">
+          <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-full h-full object-contain">
+          <div v-else class="w-full h-full rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-md">
+            <i data-lucide="boxes" class="w-5 h-5"></i>
+          </div>
         </div>
         <div class="min-w-0 flex-1">
           <h2 class="font-extrabold text-sm text-white tracking-tight flex items-center gap-1.5">
@@ -279,16 +285,19 @@
       
       <!-- Topbar Header -->
       <header class="no-print bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-10 shadow-sm transition-colors duration-200">
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <h1 class="text-base font-extrabold text-slate-800 dark:text-white tracking-tight truncate">
-              {{ headerTitle }}
-            </h1>
-            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300">
-              SI-PRAJA
-            </span>
+        <div class="flex items-center gap-3 min-w-0">
+          <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-8 h-8 object-contain rounded-lg border border-slate-200 dark:border-slate-700 bg-white p-0.5 shrink-0 hidden sm:block shadow-sm">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h1 class="text-base font-extrabold text-slate-800 dark:text-white tracking-tight truncate">
+                {{ headerTitle }}
+              </h1>
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300">
+                SI-PRAJA
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ profilLembaga.nama }} • Tahun Anggaran {{ profilLembaga.tahunAnggaran }}</p>
           </div>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ profilLembaga.nama }} • Tahun Anggaran {{ profilLembaga.tahunAnggaran }}</p>
         </div>
         <div class="flex items-center gap-2.5">
           <!-- Toggle Dark Mode -->
@@ -314,6 +323,35 @@
 
         <!-- ================= TAB: DASHBOARD UTAMA ================= -->
         <section v-if="currentTab === 'dashboard'" class="space-y-5">
+          <!-- Banner Resmi Lembaga dengan Logo -->
+          <div class="card-modern p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-900 via-slate-900 to-teal-950 text-white relative overflow-hidden shadow-xl border border-emerald-500/20">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 relative z-10">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white p-1.5 shadow-lg flex items-center justify-center shrink-0 border-2 border-emerald-400/30">
+                <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="w-full h-full object-contain">
+                <div v-else class="w-full h-full rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-xl">
+                  MIAS
+                </div>
+              </div>
+              <div class="text-center sm:text-left flex-1 min-w-0">
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/30 uppercase tracking-widest">
+                    {{ profilLembaga.yayasan }}
+                  </span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10">
+                    T.A. {{ profilLembaga.tahunAnggaran }}
+                  </span>
+                </div>
+                <h2 class="text-lg sm:text-xl font-black text-white uppercase tracking-tight mt-1">{{ profilLembaga.nama }}</h2>
+                <p class="text-xs text-emerald-200/90 mt-0.5 font-medium">{{ profilLembaga.tagline }}</p>
+                <p class="text-[11px] text-slate-300 mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1">
+                  <span>📍 {{ profilLembaga.alamat }}</span>
+                  <span>📞 {{ profilLembaga.kontak }}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
           <!-- Banner Pengingat Usulan Menunggu -->
           <div v-if="stats.menunggu > 0 && canAccessRapat" class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-transparent border border-amber-300 dark:border-amber-700/60 shadow-sm flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3.5">
@@ -352,14 +390,17 @@
               <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">Pagu Sah: <b class="text-emerald-700 dark:text-emerald-300">Rp {{ formatNumber(stats.nilaiDisetujui) }}</b></p>
             </div>
 
-            <!-- Kartu 3: Kas Terealisasi -->
+            <!-- Kartu 3: Kas Terealisasi & Pagu Sah Disetujui -->
             <div class="card-modern p-4 rounded-2xl relative overflow-hidden border-t-4 border-t-cyan-500">
               <div class="flex justify-between items-start">
-                <span class="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">Selesai Dibeli & Kas</span>
+                <span class="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">Item Selesai Realisasi</span>
                 <div class="p-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400"><i data-lucide="receipt" class="w-4 h-4"></i></div>
               </div>
               <p class="text-2xl font-black text-cyan-600 dark:text-cyan-400 mt-1">{{ stats.selesai }}</p>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">Kas Keluar: <b class="text-cyan-700 dark:text-cyan-300">Rp {{ formatNumber(stats.nilaiRealisasi) }}</b></p>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 space-y-0.5">
+                <p class="truncate">Pagu Sah: <b class="text-emerald-700 dark:text-emerald-300">Rp {{ formatNumber(stats.totalPaguDisetujuiSelesai) }}</b></p>
+                <p class="truncate">Kas Keluar: <b class="text-cyan-700 dark:text-cyan-300">Rp {{ formatNumber(stats.nilaiRealisasi) }}</b></p>
+              </div>
             </div>
 
             <!-- Kartu 4: Efisiensi Dana -->
@@ -370,6 +411,42 @@
               </div>
               <p class="text-xl font-black text-teal-600 dark:text-teal-400 mt-1.5 truncate">Rp {{ formatNumber(stats.selisihHemat) }}</p>
               <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">Penghematan dari pagu yang disetujui</p>
+            </div>
+          </div>
+
+          <!-- Panel Transparansi: Rekapitulasi Pagu Sah Disetujui vs Kas Riil Item Terealisasi -->
+          <div class="card-modern p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white border border-slate-700">
+            <div class="flex flex-wrap justify-between items-center gap-2 pb-3 mb-3 border-b border-slate-700/80">
+              <div class="flex items-center gap-2.5">
+                <div class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <i data-lucide="calculator" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h3 class="font-extrabold text-xs uppercase tracking-wider text-white">Ringkasan Pagu Disetujui & Realisasi Kas Selesai</h3>
+                  <p class="text-[10px] text-slate-400">Perbandingan akurat antara pagu yang disetujui sidang dengan pengeluaran aktual dari seluruh pengadaan selesai</p>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                {{ stats.selesai }} Pengadaan Tuntas
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Pagu Disetujui (Item Terealisasi)</span>
+                <p class="text-lg font-black text-emerald-400 mt-1">Rp {{ formatNumber(stats.totalPaguDisetujuiSelesai) }}</p>
+                <p class="text-[9px] text-slate-400 mt-0.5">Batas pagu anggaran sah hasil sidang rapat</p>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Realisasi Kas Aktual</span>
+                <p class="text-lg font-black text-cyan-400 mt-1">Rp {{ formatNumber(stats.nilaiRealisasi) }}</p>
+                <p class="text-[9px] text-slate-400 mt-0.5">Uang kas keluar riil berdasarkan bukti nota fisik</p>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Efisiensi / Penghematan Kas</span>
+                <p class="text-lg font-black text-teal-300 mt-1">Rp {{ formatNumber(stats.selisihHemat) }}</p>
+                <p class="text-[9px] text-slate-400 mt-0.5">Sisa saldo kas aman tidak terpakai</p>
+              </div>
             </div>
           </div>
 
@@ -465,31 +542,37 @@
               <button @click="currentTab = 'perencanaan'" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">Buka Semua Pengajuan →</button>
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+              <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300 min-w-[780px]">
                 <thead class="bg-slate-100/70 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">
                   <tr>
                     <th class="p-3">Kode</th>
                     <th class="p-3">Jenis</th>
                     <th class="p-3">Judul Pengajuan</th>
                     <th class="p-3">Jenjang</th>
-                    <th class="p-3 text-right">Estimasi (Rp)</th>
-                    <th class="p-3">Sifat</th>
+                    <th class="p-3 text-right">Estimasi Usulan</th>
+                    <th class="p-3 text-right">Pagu Disetujui</th>
+                    <th class="p-3 text-right">Realisasi Kas</th>
                     <th class="p-3">Status</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                   <tr v-for="item in perencanaans.slice(0, 5)" :key="item.id" class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                    <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-200">{{ item.nomor }}</td>
-                    <td class="p-3">
+                    <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ item.nomor }}</td>
+                    <td class="p-3 whitespace-nowrap">
                       <span :class="item.jenisPengajuan === 'Jasa' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'" class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase">
                         {{ item.jenisPengajuan || 'Barang' }}
                       </span>
                     </td>
                     <td class="p-3 font-medium text-slate-800 dark:text-white">{{ item.uraian }}</td>
-                    <td class="p-3">{{ item.jenjang }}</td>
-                    <td class="p-3 font-bold text-right">Rp {{ formatNumber(item.total) }}</td>
-                    <td class="p-3"><span :class="sifatBadge(item.sifat)">{{ item.sifat }}</span></td>
-                    <td class="p-3"><span :class="statusBadge(item.status)">{{ item.status }}</span></td>
+                    <td class="p-3 whitespace-nowrap">{{ item.jenjang }}</td>
+                    <td class="p-3 font-bold text-right whitespace-nowrap">Rp {{ formatNumber(item.total) }}</td>
+                    <td class="p-3 font-bold text-right text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                      {{ item.nominalDisetujui ? 'Rp ' + formatNumber(item.nominalDisetujui) : '-' }}
+                    </td>
+                    <td class="p-3 font-bold text-right text-cyan-600 dark:text-cyan-400 whitespace-nowrap">
+                      {{ item.realisasiNilai !== undefined ? 'Rp ' + formatNumber(item.realisasiNilai) : '-' }}
+                    </td>
+                    <td class="p-3 whitespace-nowrap"><span :class="statusBadge(item.status)">{{ item.status }}</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -625,9 +708,17 @@
               <div>
                 <div class="flex justify-between items-start mb-2">
                   <span class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-200 dark:border-emerald-800">{{ rapat.nomor }}</span>
-                  <span :class="rapat.status === 'Selesai' ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300'" class="text-[10px] px-2 py-0.5 rounded-full font-bold">
-                    {{ rapat.status }}
-                  </span>
+                  <div class="flex items-center gap-1.5">
+                    <span :class="rapat.status === 'Selesai' ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300'" class="text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      {{ rapat.status }}
+                    </span>
+                    <button @click="editRapat(rapat)" class="p-1 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 transition" title="Edit Agenda Sidang">
+                      <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button @click="deleteRapat(rapat.id)" class="p-1 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 transition" title="Hapus Agenda Sidang">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
                 </div>
                 <h3 class="font-bold text-slate-800 dark:text-white text-xs mt-1.5">{{ rapat.agenda }}</h3>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Tanggal: {{ rapat.tanggal }} ({{ rapat.waktuMulai || '08:00' }} - {{ rapat.waktuSelesai || 'Selesai' }})</p>
@@ -651,6 +742,14 @@
                   </button>
                   <button @click="salinNotulenWA(rapat)" class="py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1" title="Salin Notulen ke WhatsApp">
                     <i data-lucide="share-2" class="w-3 h-3"></i> Salin ke WA
+                  </button>
+                </div>
+                <div class="grid grid-cols-2 gap-1.5 pt-1">
+                  <button @click="editRapat(rapat)" class="py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700" title="Edit Agenda Rapat">
+                    <i data-lucide="edit-3" class="w-3 h-3 text-blue-500"></i> Edit Agenda
+                  </button>
+                  <button @click="deleteRapat(rapat.id)" class="py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 border border-rose-200 dark:border-rose-800" title="Hapus Agenda Rapat">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i> Hapus Sidang
                   </button>
                 </div>
               </div>
@@ -1194,20 +1293,40 @@
 
           <div class="space-y-2">
             <div v-for="(row, idx) in formPerencanaan.rincianItems" :key="idx" class="grid grid-cols-12 gap-2 items-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
-              <div class="col-span-5">
+              <div class="col-span-4">
+                <label class="block text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-0.5">Nama Barang / Jasa</label>
                 <input v-model="row.nama" type="text" placeholder="Nama barang / uraian jasa..." required class="w-full px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-xs outline-none">
               </div>
               <div class="col-span-2">
-                <input v-model.number="row.qty" type="number" min="1" placeholder="Qty" required class="w-full px-2 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-xs outline-none">
+                <label class="block text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-0.5">Qty / Vol</label>
+                <input v-model.number="row.qty" type="number" min="1" placeholder="1" required class="w-full px-2 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-xs outline-none text-center">
               </div>
               <div class="col-span-2">
-                <input v-model="row.satuan" type="text" placeholder="Satuan (Pcs/Unit/Paket)" required class="w-full px-2 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-xs outline-none">
+                <label class="block text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-0.5">Satuan</label>
+                <input v-model="row.satuan" type="text" placeholder="Pcs/Paket" required class="w-full px-2 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-xs outline-none">
               </div>
-              <div class="col-span-2">
-                <input v-model.number="row.harga" type="number" min="0" placeholder="Harga Satuan" required class="w-full px-2 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-xs outline-none text-right font-semibold">
+              <div class="col-span-3">
+                <label class="block text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-0.5">Harga Satuan (Rp)</label>
+                <div class="relative">
+                  <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 pointer-events-none">Rp</span>
+                  <input :value="row.formattedHarga !== undefined && row.formattedHarga !== '' ? row.formattedHarga : (row.harga ? formatNumber(row.harga) : '')" 
+                         @input="onInputHarga(row, $event)" 
+                         type="text" 
+                         inputmode="numeric" 
+                         placeholder="0" 
+                         required 
+                         class="w-full pl-7 pr-2 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg text-xs outline-none text-right font-mono font-bold text-emerald-600 focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="flex items-center justify-between text-[9px] mt-0.5 px-0.5">
+                  <span class="text-slate-400">Subtotal:</span>
+                  <span class="font-bold text-emerald-700 dark:text-emerald-300 font-mono">Rp {{ formatNumber((Number(row.qty) || 0) * (Number(row.harga) || 0)) }}</span>
+                </div>
+                <div v-if="row.harga >= 1000" class="text-[8.5px] text-slate-400 italic text-right truncate">
+                  {{ terbilang(row.harga) }} rupiah
+                </div>
               </div>
-              <div class="col-span-1 text-center">
-                <button v-if="formPerencanaan.rincianItems.length > 1" type="button" @click="hapusBarisItem(idx)" class="p-1 rounded text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950 transition">
+              <div class="col-span-1 text-center pt-3">
+                <button v-if="formPerencanaan.rincianItems.length > 1" type="button" @click="hapusBarisItem(idx)" class="p-1 rounded text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950 transition" title="Hapus Baris">
                   <i data-lucide="trash" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -1215,9 +1334,14 @@
           </div>
 
           <!-- Total Otomatis Rincian -->
-          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl border border-emerald-200 dark:border-emerald-800 flex justify-between items-center font-bold">
-            <span class="text-xs uppercase text-emerald-900 dark:text-emerald-200">Total Estimasi Keseluruhan:</span>
-            <span class="text-sm font-black text-emerald-700 dark:text-emerald-300">Rp {{ formatNumber(hitungTotalFormPerencanaan) }}</span>
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl border border-emerald-200 dark:border-emerald-800 flex flex-wrap justify-between items-center gap-2 font-bold">
+            <div>
+              <span class="text-xs uppercase text-emerald-900 dark:text-emerald-200 block">Total Estimasi Keseluruhan:</span>
+              <p class="text-[10px] text-emerald-700 dark:text-emerald-300 italic font-normal" v-if="hitungTotalFormPerencanaan > 0">
+                Terbilang: {{ terbilang(hitungTotalFormPerencanaan) }} rupiah
+              </p>
+            </div>
+            <span class="text-base font-black text-emerald-700 dark:text-emerald-300 font-mono">Rp {{ formatNumber(hitungTotalFormPerencanaan) }}</span>
           </div>
         </div>
 
@@ -1356,19 +1480,31 @@
     </div>
   </div>
 
-  <!-- ================= MODAL BUAT AGENDA SIDANG RAPAT ================= -->
+  <!-- ================= MODAL BUAT / EDIT AGENDA SIDANG RAPAT ================= -->
   <div v-if="showModalRapat" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-5 card-modern max-h-[95vh] overflow-y-auto">
       <div class="flex justify-between items-center pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
-        <h3 class="font-extrabold text-slate-800 dark:text-white text-xs uppercase tracking-wider">Agenda Sidang Rapat Baru</h3>
-        <button @click="showModalRapat = false" class="text-slate-400">✕</button>
+        <div>
+          <h3 class="font-extrabold text-slate-800 dark:text-white text-xs uppercase tracking-wider">
+            {{ formRapat.id ? 'Edit Agenda Sidang Rapat Koordinasi' : 'Agenda Sidang Rapat Baru' }}
+          </h3>
+          <p class="text-[10px] text-slate-400">Pilih seluruh usulan pengajuan yang belum terealisasi untuk dibahas bersama pimpinan</p>
+        </div>
+        <button @click="showModalRapat = false" class="text-slate-400 hover:text-slate-600">✕</button>
       </div>
 
       <form @submit.prevent="saveRapatBaru" class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Agenda / Nama Rapat</label>
-          <input v-model="formRapat.agenda" type="text" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+        <div class="grid grid-cols-3 gap-2.5">
+          <div class="col-span-1">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nomor Sidang</label>
+            <input v-model="formRapat.nomor" type="text" readonly class="w-full px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold text-emerald-600">
+          </div>
+          <div class="col-span-2">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Agenda / Nama Rapat</label>
+            <input v-model="formRapat.agenda" type="text" required class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl">
+          </div>
         </div>
+
         <div class="grid grid-cols-3 gap-2.5">
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Tanggal</label>
@@ -1405,28 +1541,52 @@
           <textarea v-model="formRapat.pesertaHadir" rows="2" placeholder="Mudir, Bendahara, Tim Divisi..." class="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900"></textarea>
         </div>
 
-        <div class="p-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+        <!-- Checklist Item Pengajuan Belum Terealisasi -->
+        <div class="p-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-slate-700 dark:text-slate-300 uppercase text-[10px]">Pilih Pengajuan untuk Dibahas:</span>
+            <div>
+              <span class="font-extrabold text-slate-700 dark:text-slate-300 uppercase text-[10px] flex items-center gap-1.5">
+                <i data-lucide="check-square" class="w-3.5 h-3.5 text-emerald-500"></i> Pilih Pengajuan untuk Dibahas:
+              </span>
+              <p class="text-[10px] text-slate-400">Terpilih: <b>{{ (formRapat.itemIds || []).length }}</b> dari {{ availableItemsForRapat.length }} usulan belum terealisasi</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" @click="pilihSemuaItemRapat" class="px-2 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-[10px] hover:bg-emerald-200 transition">
+                ✓ Pilih Semua
+              </button>
+              <button type="button" @click="kosongkanItemRapat" class="px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[10px] hover:bg-slate-300 transition">
+                ✕ Kosongkan
+              </button>
+            </div>
           </div>
           
-          <div class="max-h-40 overflow-y-auto border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl p-2 space-y-1">
-            <label v-for="item in availableItemsForRapat" :key="item.id" class="flex items-center gap-2 p-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
-              <input type="checkbox" :value="item.id" v-model="formRapat.itemIds">
-              <span class="truncate">
-                <b>{{ item.nomor }}</b> - {{ item.uraian }} (Rp {{ formatNumber(item.total) }}) 
-                <span :class="statusBadge(item.status)" class="text-[9px] ml-1">{{ item.status }}</span>
-              </span>
+          <div class="max-h-48 overflow-y-auto border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl p-2 space-y-1.5 divide-y divide-slate-100 dark:divide-slate-800">
+            <label v-for="item in availableItemsForRapat" :key="item.id" class="flex items-center gap-2.5 p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer transition">
+              <input type="checkbox" :value="item.id" v-model="formRapat.itemIds" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-mono font-bold text-slate-700 dark:text-slate-200 text-[11px]">{{ item.nomor }}</span>
+                  <span :class="item.jenisPengajuan === 'Jasa' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'" class="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase">
+                    {{ item.jenisPengajuan || 'Barang' }}
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-medium truncate">• {{ item.jenjang }}</span>
+                  <span :class="statusBadge(item.status)" class="text-[9px] ml-auto shrink-0">{{ item.status }}</span>
+                </div>
+                <p class="font-bold text-slate-800 dark:text-white truncate text-[11px] mt-0.5">{{ item.uraian }}</p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Usulan: <b class="text-emerald-700 dark:text-emerald-300 font-mono">Rp {{ formatNumber(item.total) }}</b> • Pengusul: {{ item.pengusul }}</p>
+              </div>
             </label>
-            <div v-if="availableItemsForRapat.length === 0" class="text-center text-slate-400 py-3 italic">
-              Tidak ada usulan baru yang siap dimasukkan ke agenda rapat.
+            <div v-if="availableItemsForRapat.length === 0" class="text-center text-slate-400 py-4 italic text-xs">
+              Semua usulan telah berstatus selesai atau dibatalkan. Tidak ada usulan tertunda.
             </div>
           </div>
         </div>
 
         <div class="pt-2.5 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
-          <button type="button" @click="showModalRapat = false" class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl">Batal</button>
-          <button type="submit" class="btn-gradient-brand text-white font-bold px-4 py-1.5 rounded-xl shadow">Mulai Sidang</button>
+          <button type="button" @click="showModalRapat = false" class="px-3.5 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold">Batal</button>
+          <button type="submit" class="btn-gradient-brand text-white font-bold px-4 py-1.5 rounded-xl shadow">
+            {{ formRapat.id ? 'Simpan Perubahan' : 'Mulai Sidang' }}
+          </button>
         </div>
       </form>
     </div>
@@ -1485,7 +1645,10 @@
 
               <div class="sm:col-span-3">
                 <label class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nominal Disetujui (Rp):</label>
-                <input v-model.number="getPerencanaanById(itemId).nominalDisetujui" @change="syncPerencanaanPagu(getPerencanaanById(itemId))" type="number" min="0" class="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 font-bold text-emerald-800 dark:text-emerald-400">
+                <input v-model.number="getPerencanaanById(itemId).nominalDisetujui" @change="syncPerencanaanPagu(getPerencanaanById(itemId))" type="number" min="0" class="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 font-bold text-emerald-800 dark:text-emerald-400 text-right font-mono">
+                <p v-if="getPerencanaanById(itemId).nominalDisetujui > 0" class="text-[9px] text-emerald-600 font-bold text-right mt-0.5 truncate">
+                  Rp {{ formatNumber(getPerencanaanById(itemId).nominalDisetujui) }}
+                </p>
               </div>
 
               <div class="sm:col-span-5">
@@ -1533,7 +1696,10 @@
 
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Nilai Realisasi Kas Aktual (Rp)</label>
-          <input v-model.number="formRealisasi.nilai" type="number" min="0" required class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl font-black text-blue-600 dark:text-blue-400 text-sm">
+          <input v-model.number="formRealisasi.nilai" type="number" min="0" required class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl font-black text-blue-600 dark:text-blue-400 text-sm text-right font-mono">
+          <p v-if="formRealisasi.nilai > 0" class="text-[10px] text-blue-600 font-bold text-right mt-1">
+            Rp {{ formatNumber(formRealisasi.nilai) }} ({{ terbilang(formRealisasi.nilai) }} rupiah)
+          </p>
         </div>
 
         <div class="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between font-bold text-xs">
@@ -1666,13 +1832,21 @@
         </div>
       </div>
 
-      <div class="border-b-2 border-slate-900 pb-3 mb-4 text-center">
-        <h2 class="text-xs font-black uppercase text-slate-600">{{ profilLembaga.yayasan }}</h2>
-        <h1 class="text-base font-black uppercase text-slate-900">{{ profilLembaga.nama }}</h1>
-        <p class="text-[10px] text-slate-500">{{ profilLembaga.alamat }} • Telp: {{ profilLembaga.kontak }}</p>
-        <p class="text-xs font-black uppercase tracking-widest mt-2 border-t border-slate-200 pt-1 text-emerald-800">
-          FORMULIR PENGAJUAN PENGADAAN BARANG & JASA (SI-PRAJA)
-        </p>
+      <div class="border-b-2 border-slate-900 pb-3 mb-4 flex items-center gap-4">
+        <div class="w-16 h-16 shrink-0 flex items-center justify-center">
+          <img v-if="profilLembaga.logo" :src="profilLembaga.logo" class="max-w-full max-h-full object-contain">
+          <div v-else class="w-14 h-14 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-lg">
+            MIAS
+          </div>
+        </div>
+        <div class="flex-1 text-center pr-16">
+          <h2 class="text-xs font-black uppercase text-slate-600">{{ profilLembaga.yayasan }}</h2>
+          <h1 class="text-base font-black uppercase text-slate-900">{{ profilLembaga.nama }}</h1>
+          <p class="text-[10px] text-slate-500">{{ profilLembaga.alamat }} • Telp: {{ profilLembaga.kontak }}</p>
+          <p class="text-xs font-black uppercase tracking-widest mt-2 border-t border-slate-200 pt-1 text-emerald-800">
+            FORMULIR PENGAJUAN PENGADAAN BARANG & JASA (SI-PRAJA)
+          </p>
+        </div>
       </div>
 
       <div class="space-y-3 text-xs">
@@ -2021,6 +2195,9 @@ createApp({
     // State Tema Gelap / Dark Mode
     const isDarkMode = ref(false);
 
+    // Logo Emblem Resmi Lembaga Default (Vector SVG)
+    const defaultLogoSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23059669'/><stop offset='100%25' stop-color='%23047857'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23fbbf24' stroke-width='3'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-dasharray='2,2'/><path d='M50 18 L62 30 L50 42 L38 30 Z' fill='%23fbbf24'/><path d='M28 56 Q50 45 72 56 L72 72 Q50 62 28 72 Z' fill='%23ffffff'/><path d='M50 47 L50 66' stroke='%23047857' stroke-width='2.5'/><text x='50' y='84' text-anchor='middle' fill='%23fbbf24' font-family='sans-serif' font-weight='900' font-size='10' letter-spacing='1.5'>MIAS</text></svg>";
+
     // Profil Lembaga & Bendahara
     const profilLembaga = ref({
       namaApp: 'SI-PRAJA',
@@ -2030,7 +2207,7 @@ createApp({
       tahunAnggaran: '2026/2027',
       kontak: '0812-3456-7890',
       tagline: 'Sistem Informasi Pengajuan Barang & Jasa',
-      logo: ''
+      logo: defaultLogoSvg
     });
 
     const profilBendahara = ref({
@@ -2253,17 +2430,31 @@ createApp({
     };
 
     const generateNomorPengajuan = () => {
-      const year = new Date().getFullYear().toString().slice(-2);
       let maxNum = 0;
       perencanaans.value.forEach(p => {
-        const parts = (p.nomor || '').split('-');
-        if (parts.length >= 2) {
-          const n = parseInt(parts[1], 10);
+        const match = (p.nomor || '').match(/(\d+)$/);
+        if (match) {
+          let n = parseInt(match[1], 10);
+          if (n > 10000) n = n % 1000;
           if (!isNaN(n) && n > maxNum) maxNum = n;
         }
       });
       const nextNum = maxNum + 1;
-      return `PRJ-${year}${String(nextNum).padStart(3, '0')}`;
+      return `PRJ-${String(nextNum).padStart(3, '0')}`;
+    };
+
+    const generateNomorRapat = () => {
+      let maxNum = 0;
+      rapats.value.forEach(r => {
+        const match = (r.nomor || '').match(/(\d+)$/);
+        if (match) {
+          let n = parseInt(match[1], 10);
+          if (n > 10000) n = n % 1000;
+          if (!isNaN(n) && n > maxNum) maxNum = n;
+        }
+      });
+      const nextNum = maxNum + 1;
+      return `SID-${String(nextNum).padStart(3, '0')}`;
     };
 
     const initData = () => {
@@ -2271,7 +2462,12 @@ createApp({
       if (savedDark !== null) applyDarkMode(JSON.parse(savedDark));
 
       const savedLembaga = localStorage.getItem('sipraja_profil_lembaga');
-      if (savedLembaga) profilLembaga.value = { ...profilLembaga.value, ...JSON.parse(savedLembaga) };
+      if (savedLembaga) {
+        profilLembaga.value = { ...profilLembaga.value, ...JSON.parse(savedLembaga) };
+      }
+      if (!profilLembaga.value.logo) {
+        profilLembaga.value.logo = defaultLogoSvg;
+      }
 
       const savedBendahara = localStorage.getItem('sipraja_profil_bendahara');
       if (savedBendahara) profilBendahara.value = { ...profilBendahara.value, ...JSON.parse(savedBendahara) };
@@ -2287,12 +2483,18 @@ createApp({
 
       const savedPerencanaan = localStorage.getItem('sipraja_perencanaan');
       if (savedPerencanaan) {
-        perencanaans.value = JSON.parse(savedPerencanaan);
+        const loadedP = JSON.parse(savedPerencanaan);
+        loadedP.forEach((p, idx) => {
+          if (p.nomor && p.nomor.startsWith('PRJ-260')) {
+            p.nomor = `PRJ-${String(idx + 1).padStart(3, '0')}`;
+          }
+        });
+        perencanaans.value = loadedP;
       } else {
         perencanaans.value = [
           {
             id: 1,
-            nomor: 'PRJ-26001',
+            nomor: 'PRJ-001',
             tanggal: '2026-10-15',
             jenisPengajuan: 'Barang',
             pengusul: 'Ustadz Ahmad',
@@ -2316,7 +2518,7 @@ createApp({
           },
           {
             id: 2,
-            nomor: 'PRJ-26002',
+            nomor: 'PRJ-002',
             tanggal: '2026-10-18',
             jenisPengajuan: 'Jasa',
             pengusul: 'Bagian Sarpras',
@@ -2337,7 +2539,7 @@ createApp({
           },
           {
             id: 3,
-            nomor: 'PRJ-26003',
+            nomor: 'PRJ-003',
             tanggal: '2026-10-20',
             jenisPengajuan: 'Barang',
             pengusul: 'Ustadzah Fatimah',
@@ -2361,12 +2563,18 @@ createApp({
 
       const savedRapat = localStorage.getItem('sipraja_rapat');
       if (savedRapat) {
-        rapats.value = JSON.parse(savedRapat);
+        const loadedR = JSON.parse(savedRapat);
+        loadedR.forEach((r, idx) => {
+          if (r.nomor && r.nomor.startsWith('SID-260')) {
+            r.nomor = `SID-${String(idx + 1).padStart(3, '0')}`;
+          }
+        });
+        rapats.value = loadedR;
       } else {
         rapats.value = [
           {
             id: 1,
-            nomor: 'SID-26001',
+            nomor: 'SID-001',
             agenda: 'Sidang Koordinasi Pengadaan Barang & Jasa Periode Oktober 2026',
             tanggal: '2026-10-19',
             waktuMulai: '08:30',
@@ -2522,8 +2730,9 @@ createApp({
       const disetujuiItems = all.filter(p => ['Disetujui', 'Dalam Proses', 'Selesai'].includes(p.status));
       const nilaiDisetujui = disetujuiItems.reduce((acc, cur) => acc + (cur.nominalDisetujui || cur.total || 0), 0);
       const selesaiItems = all.filter(p => p.status === 'Selesai');
+      const totalPaguDisetujuiSelesai = selesaiItems.reduce((acc, cur) => acc + (cur.nominalDisetujui || cur.total || 0), 0);
       const nilaiRealisasi = selesaiItems.reduce((acc, cur) => acc + (cur.realisasiNilai !== undefined ? cur.realisasiNilai : (cur.nominalDisetujui || cur.total || 0)), 0);
-      const selisihHemat = selesaiItems.reduce((acc, cur) => acc + ((cur.nominalDisetujui || cur.total || 0) - (cur.realisasiNilai !== undefined ? cur.realisasiNilai : 0)), 0);
+      const selisihHemat = totalPaguDisetujuiSelesai - nilaiRealisasi;
       const menungguItems = all.filter(p => p.status === 'Menunggu Rapat');
 
       return {
@@ -2535,6 +2744,7 @@ createApp({
         nilaiDisetujui,
         dalamProses: all.filter(p => p.status === 'Dalam Proses').length,
         selesai: selesaiItems.length,
+        totalPaguDisetujuiSelesai,
         ditunda: all.filter(p => p.status === 'Ditunda').length,
         dibatalkan: all.filter(p => p.status === 'Dibatalkan').length,
         nilaiRealisasi,
@@ -2564,13 +2774,22 @@ createApp({
       return formPerencanaan.value.rincianItems.reduce((sum, item) => sum + ((Number(item.qty) || 0) * (Number(item.harga) || 0)), 0);
     });
 
+    const onInputHarga = (row, e) => {
+      const digits = (e.target.value || '').replace(/\D/g, '');
+      const num = digits ? parseInt(digits, 10) : 0;
+      row.harga = num;
+      row.formattedHarga = num > 0 ? num.toLocaleString('id-ID') : '';
+      e.target.value = row.formattedHarga;
+    };
+
     const tambahBarisItem = () => {
       if (!formPerencanaan.value.rincianItems) formPerencanaan.value.rincianItems = [];
       formPerencanaan.value.rincianItems.push({
         nama: '',
         qty: 1,
         satuan: formPerencanaan.value.jenisPengajuan === 'Jasa' ? 'Paket' : 'Pcs',
-        harga: 0
+        harga: 0,
+        formattedHarga: ''
       });
       refreshIcons();
     };
@@ -2583,7 +2802,10 @@ createApp({
       formPerencanaan.value.jenisPengajuan = tpl.jenis;
       formPerencanaan.value.jenjang = tpl.jenjang;
       formPerencanaan.value.uraian = tpl.uraian;
-      formPerencanaan.value.rincianItems = JSON.parse(JSON.stringify(tpl.items));
+      formPerencanaan.value.rincianItems = JSON.parse(JSON.stringify(tpl.items)).map(it => ({
+        ...it,
+        formattedHarga: it.harga ? Number(it.harga).toLocaleString('id-ID') : ''
+      }));
       showTemplateModal.value = false;
       showModalPerencanaan.value = true;
       refreshIcons();
@@ -2671,7 +2893,7 @@ createApp({
         alasan: '',
         rekomendasiToko: '',
         rincianItems: [
-          { nama: '', qty: 1, satuan: 'Pcs', harga: 0 }
+          { nama: '', qty: 1, satuan: 'Pcs', harga: 0, formattedHarga: '' }
         ]
       };
       showModalPerencanaan.value = true;
@@ -2685,6 +2907,9 @@ createApp({
           { nama: item.uraian, qty: item.jumlah || 1, satuan: item.satuan || 'Pcs', harga: item.hargaSatuan || item.total }
         ];
       }
+      formPerencanaan.value.rincianItems.forEach(r => {
+        r.formattedHarga = r.harga ? Number(r.harga).toLocaleString('id-ID') : '';
+      });
       showModalPerencanaan.value = true;
       refreshIcons();
     };
@@ -2756,14 +2981,21 @@ createApp({
     };
 
     const availableItemsForRapat = computed(() => {
-      return perencanaans.value.filter(p => p.status === 'Menunggu Rapat' || p.status === 'Ditunda');
+      return perencanaans.value.filter(p => {
+        const isSelectedInCurrentForm = formRapat.value.itemIds && formRapat.value.itemIds.includes(p.id);
+        return isSelectedInCurrentForm || (p.status !== 'Selesai' && p.status !== 'Dibatalkan');
+      });
     });
 
     const openModalRapat = () => {
-      const year = new Date().getFullYear().toString().slice(-2);
-      const count = rapats.value.length + 1;
+      const newKode = generateNomorRapat();
+      const defaultSelected = perencanaans.value
+        .filter(p => p.status === 'Menunggu Rapat' || p.status === 'Ditunda')
+        .map(p => p.id);
+      
       formRapat.value = {
-        nomor: `SID-${year}${String(count).padStart(3, '0')}`,
+        id: null,
+        nomor: newKode,
         agenda: `Sidang Koordinasi Pengadaan Barang & Jasa Periode ${new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`,
         tanggal: new Date().toISOString().split('T')[0],
         waktuMulai: '08:30',
@@ -2772,19 +3004,53 @@ createApp({
         pimpinan: 'Mudir Ma\'had',
         notulis: currentUser.value ? currentUser.value.name : 'Dadi Slamet Riyadi',
         pesertaHadir: 'Mudir, Bendahara, Koordinator Jenjang, Tim Sarpras',
-        itemIds: availableItemsForRapat.value.map(p => p.id)
+        itemIds: defaultSelected.length > 0 ? defaultSelected : availableItemsForRapat.value.map(p => p.id)
       };
       showModalRapat.value = true;
+      refreshIcons();
+    };
+
+    const editRapat = (rapat) => {
+      formRapat.value = JSON.parse(JSON.stringify(rapat));
+      if (!formRapat.value.itemIds) formRapat.value.itemIds = [];
+      showModalRapat.value = true;
+      refreshIcons();
+    };
+
+    const deleteRapat = (id) => {
+      const target = rapats.value.find(r => r.id === id);
+      const no = target ? target.nomor : '';
+      if (confirm(`Yakin ingin menghapus agenda sidang rapat ${no}? Riwayat notulensi sidang ini akan dihapus.`)) {
+        rapats.value = rapats.value.filter(r => r.id !== id);
+        saveToLocalStorage();
+        if (activeRapat.value && activeRapat.value.id === id) activeRapat.value = null;
+        refreshIcons();
+      }
+    };
+
+    const pilihSemuaItemRapat = () => {
+      formRapat.value.itemIds = availableItemsForRapat.value.map(p => p.id);
+    };
+
+    const kosongkanItemRapat = () => {
+      formRapat.value.itemIds = [];
     };
 
     const saveRapatBaru = () => {
-      const newRapat = {
-        ...formRapat.value,
-        id: Date.now(),
-        kesimpulanUmum: '',
-        status: 'Berjalan'
-      };
-      rapats.value.unshift(newRapat);
+      if (formRapat.value.id) {
+        const idx = rapats.value.findIndex(r => r.id === formRapat.value.id);
+        if (idx !== -1) {
+          rapats.value[idx] = { ...rapats.value[idx], ...formRapat.value };
+        }
+      } else {
+        const newRapat = {
+          ...formRapat.value,
+          id: Date.now(),
+          kesimpulanUmum: '',
+          status: 'Berjalan'
+        };
+        rapats.value.unshift(newRapat);
+      }
       showModalRapat.value = false;
       saveToLocalStorage();
     };
@@ -3175,7 +3441,8 @@ createApp({
       formatNumber, formatTanggalIndo, terbilang, navClass, sifatBadge, statusBadge,
       openModalPerencanaan, editPerencanaan, savePerencanaan, deletePerencanaan, viewDetailPerencanaan, bukaDisposisi, bukaKwitansiBKK,
       openModalUbahStatus, simpanUbahStatus,
-      openModalRapat, saveRapatBaru, bukaSidangRapat, getPerencanaanById, setKeputusanSidang, syncPerencanaanPagu, syncPerencanaan, selesaikanSidangRapat,
+      openModalRapat, editRapat, deleteRapat, pilihSemuaItemRapat, kosongkanItemRapat, saveRapatBaru, bukaSidangRapat, getPerencanaanById, setKeputusanSidang, syncPerencanaanPagu, syncPerencanaan, selesaikanSidangRapat,
+      onInputHarga, generateNomorRapat, generateNomorPengajuan,
       cetakBeritaAcara, downloadBeritaAcaraJPG, downloadBeritaAcaraPDF, salinNotulenWA,
       openModalRealisasi, saveRealisasi, printReport, exportToExcel, exportMultiSheetExcel, backupDataJSON, restoreDataJSON
     };
